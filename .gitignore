@@ -1,0 +1,36 @@
+# Virtual Environments
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# IDE and Editor configurations
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Sensitive / Large Data (Ground rule: never commit datasets)
+data/
+data/raw/
+data/warehouse/
+data/processed/
+*.parquet
+*.csv
+!outputs/*.csv
+*.tar.gz
+*.zip

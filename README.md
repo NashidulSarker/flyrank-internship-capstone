@@ -1,9 +1,13 @@
 # Beyond Static Rules: Machine Learning for Content Decay Prioritization in Search Operations
 
+[![Live Report](https://img.shields.io/badge/Live%20Report-GitHub%20Pages-2ea44f?style=for-the-badge&logo=github)](https://nashidulsarker.github.io/flyrank-internship-capstone/)
+
 [![Python 3.14](https://img.shields.io/badge/python-3.14-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 [![Validation: GroupKFold](https://img.shields.io/badge/Validation-5--Fold%20GroupKFold%20(Client)--blueviolet.svg)]()
 [![Model: Dual--Champion](https://img.shields.io/badge/Dual--Champion-Random%20Forest%20%2B%20LightGBM-emerald.svg)]()
+
+> 🌐 **Interactive Web Report:** [nashidulsarker.github.io/flyrank-internship-capstone](https://nashidulsarker.github.io/flyrank-internship-capstone/)
 
 This repository contains the complete research pipeline, data contracts, signal audits, dual-model benchmarks, leakage stress tests, and editorial decision playbooks for prioritizing organic search content decay across enterprise publishing networks.
 
@@ -21,8 +25,8 @@ Open and run **[`notebooks/capstone_content_decay.ipynb`](notebooks/capstone_con
 
 ## Deliverables & Documentation
 
+- **Interactive Web Report:** [Live Website on GitHub Pages](https://nashidulsarker.github.io/flyrank-internship-capstone/) ([`docs/index.html`](docs/index.html))
 - **Research Paper:** [`docs/research_paper.md`](docs/research_paper.md) (All 9 canonical sections)
-- **Web Report & Presentation:** [`docs/index.html`](docs/index.html) (Dark-mode responsive report)
 - **Master Capstone Notebook:** [`notebooks/capstone_content_decay.ipynb`](notebooks/capstone_content_decay.ipynb)
 - **Automated Pipeline Runner:** `python scripts/run_all.py`
 

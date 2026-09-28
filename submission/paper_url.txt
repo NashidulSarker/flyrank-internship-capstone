@@ -1,5 +1,0 @@
-# Local Presentation URL:
-file:///c:/Users/1iCE/Desktop/internship%20project/docs/index.html
-
-# Production GitHub Pages URL Deployment Target:
-https://nashidulsarker.github.io/flyrank-internship-capstone/

@@ -87,8 +87,8 @@ Open and run **[`notebooks/capstone_content_decay.ipynb`](notebooks/capstone_con
 
 ```bash
 # Clone and enter directory
-git clone <repo-url>
-cd "internship project"
+git clone https://github.com/NashidulSarker/flyrank-internship-capstone
+cd "flyrank-internship-capstone"
 
 # Install virtual environment
 python -m venv .venv

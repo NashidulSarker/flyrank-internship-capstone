@@ -4,8 +4,8 @@
 
 [![Python 3.14](https://img.shields.io/badge/python-3.14-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
-[![Validation: GroupKFold](https://img.shields.io/badge/Validation-5--Fold%20GroupKFold%20(Client)--blueviolet.svg)]()
-[![Model: Dual--Champion](https://img.shields.io/badge/Dual--Champion-Random%20Forest%20%2B%20LightGBM-emerald.svg)]()
+[![Validation: GroupKFold](https://img.shields.io/badge/Validation-5--Fold%20GroupKFold%20(Client)--blueviolet.svg)](#key-empirical-findings)
+[![Model: Dual--Champion](https://img.shields.io/badge/Dual--Champion-Random%20Forest%20%2B%20LightGBM-emerald.svg)](#key-empirical-findings)
 
 > 🌐 **Interactive Web Report:** [nashidulsarker.github.io/flyrank-internship-capstone](https://nashidulsarker.github.io/flyrank-internship-capstone/)
 

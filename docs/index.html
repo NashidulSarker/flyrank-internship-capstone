@@ -1,110 +1,399 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Beyond Static Rules: Machine Learning for Content Decay Prioritization in Search Operations</title>
-  <meta name="description" content="A cross-sectional study of 30,000 URLs evaluating machine learning against heuristic rules for content decay ranking under client-grouped cross-validation.">
+  <meta name="description"
+    content="A cross-sectional study of 30,000 URLs evaluating machine learning against heuristic rules for content decay ranking under client-grouped cross-validation.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <style>
+    /* ==========================================================================
+       DESIGN SYSTEM & CSS CUSTOM PROPERTIES
+       ========================================================================== */
     :root {
-      --bg-primary: #0a0e17;
-      --bg-surface: #111827;
-      --bg-surface-elevated: #1a2234;
-      --border-subtle: #243049;
-      --border-focus: #38bdf8;
-      --text-primary: #f1f5f9;
-      --text-secondary: #94a3b8;
-      --text-muted: #64748b;
-      --accent-blue: #38bdf8;
-      --accent-indigo: #818cf8;
-      --accent-emerald: #34d399;
-      --accent-amber: #fbbf24;
-      --accent-rose: #fb7185;
-      --gradient-brand: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      /* Shared Color Palette */
+      --primary-50: #eff6ff;
+      --primary-100: #dbeafe;
+      --primary-500: #3b82f6;
+      --primary-600: #2563eb;
+      --primary-700: #1d4ed8;
+
+      --emerald-500: #10b981;
+      --emerald-600: #059669;
+      --emerald-subtle: rgba(16, 185, 129, 0.12);
+      --emerald-border: rgba(16, 185, 129, 0.28);
+
+      --amber-500: #f59e0b;
+      --amber-600: #d97706;
+      --amber-subtle: rgba(245, 158, 11, 0.12);
+      --amber-border: rgba(245, 158, 11, 0.28);
+
+      --rose-500: #f43f5e;
+      --rose-600: #e11d48;
+      --rose-subtle: rgba(244, 63, 94, 0.12);
+      --rose-border: rgba(244, 63, 94, 0.28);
+
+      --sky-500: #0ea5e9;
+      --sky-subtle: rgba(14, 165, 233, 0.12);
+      --sky-border: rgba(14, 165, 233, 0.28);
+
+      --indigo-500: #6366f1;
+      --indigo-subtle: rgba(99, 102, 241, 0.12);
+
+      /* Typography Scale */
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+      /* Spacing Scale */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+      --space-3xl: 4.5rem;
+
+      /* Radii */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+      --radius-full: 9999px;
+
+      /* Transition Tokens */
+      --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-base: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-smooth: 350ms cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    * {
+    /* Dark Mode (Default) */
+    :root[data-theme="dark"] {
+      --bg-page: #0a0e17;
+      --bg-card: #111827;
+      --bg-card-hover: #162033;
+      --bg-card-elevated: #1a2236;
+      --bg-surface: #0f1624;
+      --bg-subtle: rgba(255, 255, 255, 0.04);
+      --bg-subtle-hover: rgba(255, 255, 255, 0.08);
+
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-default: rgba(255, 255, 255, 0.13);
+      --border-emphasis: rgba(255, 255, 255, 0.24);
+
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --text-faint: #475569;
+
+      --accent-primary: #38bdf8;
+      --accent-primary-hover: #7dd3fc;
+      --accent-bg-subtle: rgba(56, 189, 248, 0.1);
+      --accent-border: rgba(56, 189, 248, 0.25);
+
+      --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45);
+      --card-shadow-hover: 0 12px 32px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(56, 189, 248, 0.2);
+      --navbar-bg: rgba(10, 14, 23, 0.85);
+
+      --code-bg: #070b12;
+      --code-text: #e2e8f0;
+      --table-stripe: rgba(255, 255, 255, 0.015);
+      --table-hover: rgba(56, 189, 248, 0.04);
+    }
+
+    /* Light Mode */
+    :root[data-theme="light"] {
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-card-hover: #fcfdfe;
+      --bg-card-elevated: #ffffff;
+      --bg-surface: #f1f5f9;
+      --bg-subtle: rgba(0, 0, 0, 0.03);
+      --bg-subtle-hover: rgba(0, 0, 0, 0.06);
+
+      --border-subtle: #e2e8f0;
+      --border-default: #cbd5e1;
+      --border-emphasis: #94a3b8;
+
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --text-faint: #94a3b8;
+
+      --accent-primary: #0284c7;
+      --accent-primary-hover: #0369a1;
+      --accent-bg-subtle: rgba(2, 132, 199, 0.08);
+      --accent-border: rgba(2, 132, 199, 0.25);
+
+      --card-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+      --card-shadow-hover: 0 12px 28px -4px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(2, 132, 199, 0.25);
+      --navbar-bg: rgba(248, 250, 252, 0.9);
+
+      --code-bg: #0f172a;
+      --code-text: #f1f5f9;
+      --table-stripe: rgba(0, 0, 0, 0.015);
+      --table-hover: rgba(2, 132, 199, 0.04);
+    }
+
+    /* ==========================================================================
+       RESET & BASE STYLES
+       ========================================================================== */
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
     body {
-      background-color: var(--bg-primary);
+      background-color: var(--bg-page);
       color: var(--text-primary);
       font-family: var(--font-sans);
-      line-height: 1.65;
       font-size: 16px;
+      line-height: 1.7;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color var(--transition-base), color var(--transition-base);
+      overflow-x: hidden;
     }
 
-    /* Sticky Navigation */
-    .nav-bar {
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-page);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-default);
+      border-radius: var(--radius-full);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border-emphasis);
+    }
+
+    /* Reading Progress Bar */
+    .reading-progress-track {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      z-index: 100;
+      background: transparent;
+    }
+
+    .reading-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-primary), var(--indigo-500));
+      transition: width 50ms linear;
+    }
+
+    /* ==========================================================================
+       NAVBAR / HEADER
+       ========================================================================== */
+    .site-nav {
       position: sticky;
       top: 0;
-      z-index: 50;
-      background: rgba(10, 14, 23, 0.85);
-      backdrop-filter: blur(12px);
+      z-index: 90;
+      background: var(--navbar-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border-subtle);
-      padding: 0.75rem 1.5rem;
+      transition: background-color var(--transition-base), border-color var(--transition-base);
     }
 
-    .nav-inner {
-      max-width: 1040px;
+    .nav-container {
+      max-width: 1360px;
       margin: 0 auto;
+      padding: 0.75rem 1.5rem;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 1rem;
+      justify-content: space-between;
+      gap: 1.5rem;
     }
 
     .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
       font-weight: 700;
       font-size: 0.95rem;
-      background: var(--gradient-brand);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      white-space: nowrap;
+      letter-spacing: -0.01em;
+      flex-shrink: 0;
     }
 
-    .nav-links {
+
+
+    .nav-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.2rem 0.5rem;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+    }
+
+    .nav-links-wrap {
       display: flex;
-      gap: 1.25rem;
-      font-size: 0.85rem;
-      overflow-x: auto;
-      padding-bottom: 2px;
+      align-items: center;
+      gap: 0.2rem;
+      flex-wrap: nowrap;
     }
 
-    .nav-links a {
+    .nav-link {
       color: var(--text-secondary);
       text-decoration: none;
+      font-size: 0.83rem;
       font-weight: 500;
+      padding: 0.38rem 0.58rem;
+      border-radius: var(--radius-sm);
       white-space: nowrap;
-      transition: color 0.15s ease;
+      transition: color var(--transition-fast), background-color var(--transition-fast);
     }
 
-    .nav-links a:hover {
-      color: var(--accent-blue);
+    .nav-link:hover {
+      color: var(--text-primary);
+      background-color: var(--bg-subtle-hover);
+    }
+
+    .nav-link.active {
+      color: var(--accent-primary);
+      background-color: var(--accent-bg-subtle);
+      font-weight: 600;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.45rem 0.95rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
       text-decoration: none;
+      transition: all var(--transition-fast);
+      line-height: 1.25;
+      user-select: none;
     }
 
-    /* Container & Layout */
-    .paper-container {
-      max-width: 960px;
+    .btn:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      border-color: var(--border-default);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-emphasis);
+      color: var(--text-primary);
+    }
+
+    .btn-primary {
+      background: var(--accent-primary);
+      border-color: var(--accent-primary);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(14, 165, 233, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-primary-hover);
+      border-color: var(--accent-primary-hover);
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
+    }
+
+    .btn-icon {
+      padding: 0.45rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-icon:hover {
+      color: var(--text-primary);
+      border-color: var(--border-emphasis);
+      background: var(--bg-subtle-hover);
+    }
+
+    .btn-sm {
+      padding: 0.3rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    /* Mobile Hamburger */
+    .mobile-menu-btn {
+      display: none;
+    }
+
+    /* ==========================================================================
+       MAIN LAYOUT: CENTERED EDITORIAL PAPER
+       ========================================================================== */
+    .page-layout {
+      max-width: 1060px;
       margin: 0 auto;
       padding: 2.5rem 1.5rem 6rem;
+      display: block;
     }
 
-    /* Header & Hero */
-    header {
-      border-bottom: 1px solid var(--border-subtle);
+    /* Main Content Column */
+    .paper-main {
+      width: 100%;
+      min-width: 0;
+    }
+
+    /* ==========================================================================
+       HERO & HEADER COMPONENT
+       ========================================================================== */
+    .hero-header {
       padding-bottom: 2.5rem;
       margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-subtle);
     }
 
     .badge-pill {
@@ -112,99 +401,246 @@
       align-items: center;
       gap: 0.5rem;
       padding: 0.35rem 0.85rem;
-      border-radius: 9999px;
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      color: var(--accent-blue);
-      font-size: 0.8rem;
+      border-radius: var(--radius-full);
+      background: var(--accent-bg-subtle);
+      border: 1px solid var(--accent-border);
+      color: var(--accent-primary);
+      font-size: 0.78rem;
       font-weight: 600;
       letter-spacing: 0.05em;
       text-transform: uppercase;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
     }
 
-    h1 {
-      font-size: 2.5rem;
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      box-shadow: 0 0 8px var(--accent-primary);
+    }
+
+    h1.paper-title {
+      font-size: 2.35rem;
       font-weight: 800;
-      letter-spacing: -0.025em;
-      line-height: 1.2;
-      background: var(--gradient-brand);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.03em;
+      line-height: 1.25;
+      color: var(--text-primary);
       margin-bottom: 1.25rem;
     }
 
     .meta-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: 1.5rem;
-      font-size: 0.875rem;
+      gap: 1.25rem 2rem;
+      padding: 1rem 1.25rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
       color: var(--text-secondary);
       align-items: center;
     }
 
-    .meta-item strong {
-      color: var(--text-primary);
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
     }
 
-    /* Metric Cards Grid */
+    .meta-item strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .meta-icon {
+      color: var(--text-muted);
+      display: inline-flex;
+    }
+
+    /* ==========================================================================
+       KEY METRICS GRID
+       ========================================================================== */
     .metrics-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 1rem;
       margin: 2rem 0 2.5rem;
     }
 
     .metric-card {
-      background: var(--bg-surface);
+      background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      border-radius: 0.75rem;
-      padding: 1.25rem;
-      transition: transform 0.2s, border-color 0.2s;
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.15rem;
+      box-shadow: var(--card-shadow);
+      position: relative;
+      overflow: hidden;
+      transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--card-accent, var(--accent-primary));
+      opacity: 0.8;
     }
 
     .metric-card:hover {
       transform: translateY(-2px);
-      border-color: rgba(56, 189, 248, 0.4);
+      border-color: var(--border-emphasis);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    .metric-card.accent-emerald {
+      --card-accent: var(--emerald-500);
+    }
+
+    .metric-card.accent-sky {
+      --card-accent: var(--sky-500);
+    }
+
+    .metric-card.accent-rose {
+      --card-accent: var(--rose-500);
+    }
+
+    .metric-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
     }
 
     .metric-card-label {
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: var(--text-muted);
-      margin-bottom: 0.4rem;
+      font-weight: 700;
+      line-height: 1.35;
+      flex: 1 1 auto;
+    }
+
+    .metric-badge-pill {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
       font-weight: 600;
+      padding: 0.15rem 0.45rem;
+      border-radius: var(--radius-full);
+      white-space: nowrap;
+      flex-shrink: 0;
+      align-self: flex-start;
+    }
+
+    .badge-lift-emerald {
+      background: var(--emerald-subtle);
+      color: var(--emerald-500);
+      border: 1px solid var(--emerald-border);
+    }
+
+    .badge-penalty-rose {
+      background: var(--rose-subtle);
+      color: var(--rose-500);
+      border: 1px solid var(--rose-border);
+    }
+
+    .badge-info-sky {
+      background: var(--sky-subtle);
+      color: var(--sky-500);
+      border: 1px solid var(--sky-border);
     }
 
     .metric-card-val {
-      font-size: 1.75rem;
+      font-size: 1.95rem;
       font-weight: 800;
       font-family: var(--font-mono);
       color: var(--text-primary);
-      line-height: 1.1;
-      margin-bottom: 0.35rem;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+    }
+
+    .val-emerald {
+      color: var(--emerald-500);
+    }
+
+    .val-blue {
+      color: var(--accent-primary);
+    }
+
+    .val-rose {
+      color: var(--rose-500);
     }
 
     .metric-card-sub {
       font-size: 0.8rem;
       color: var(--text-secondary);
+      line-height: 1.4;
     }
 
-    .val-emerald { color: var(--accent-emerald); }
-    .val-blue { color: var(--accent-blue); }
-    .val-amber { color: var(--accent-amber); }
-    .val-rose { color: var(--accent-rose); }
-
-    /* Section Styling */
-    section {
-      margin-bottom: 3.5rem;
-      scroll-margin-top: 4.5rem;
+    /* ==========================================================================
+       EXECUTIVE ABSTRACT CARD
+       ========================================================================== */
+    .abstract-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-left: 4px solid var(--accent-primary);
+      border-radius: var(--radius-md);
+      padding: 1.75rem 2rem;
+      margin-bottom: 3rem;
+      box-shadow: var(--card-shadow);
+      position: relative;
     }
 
-    h2 {
-      font-size: 1.65rem;
+    .abstract-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .abstract-tag {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-primary);
       font-weight: 700;
+    }
+
+    .abstract-card p {
+      font-size: 1.02rem;
+      line-height: 1.8;
+      color: var(--text-primary);
+      margin-bottom: 0;
+    }
+
+    .abstract-card p strong {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       SECTIONS & TYPOGRAPHY
+       ========================================================================== */
+    section.paper-section {
+      margin-bottom: 4rem;
+      scroll-margin-top: 5rem;
+    }
+
+    h2.section-heading {
+      font-size: 1.6rem;
+      font-weight: 750;
       letter-spacing: -0.02em;
       color: var(--text-primary);
       margin-bottom: 1.25rem;
@@ -212,186 +648,467 @@
       align-items: center;
       gap: 0.75rem;
       border-bottom: 1px solid var(--border-subtle);
-      padding-bottom: 0.5rem;
+      padding-bottom: 0.65rem;
     }
 
-    h3 {
+    .section-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--accent-primary);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    h3.sub-heading {
       font-size: 1.2rem;
-      font-weight: 600;
+      font-weight: 650;
+      letter-spacing: -0.01em;
       color: var(--text-primary);
-      margin: 1.5rem 0 0.75rem;
+      margin: 2rem 0 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     p {
       color: var(--text-secondary);
-      margin-bottom: 1.15rem;
+      margin-bottom: 1.25rem;
+      line-height: 1.75;
     }
 
-    strong {
+    p strong {
       color: var(--text-primary);
+      font-weight: 650;
     }
 
-    /* Abstract Callout */
-    .abstract-card {
-      background: var(--bg-surface);
+    p code,
+    li code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      padding: 0.15rem 0.4rem;
+      background: var(--bg-subtle);
       border: 1px solid var(--border-subtle);
-      border-left: 4px solid var(--accent-blue);
-      border-radius: 0.75rem;
-      padding: 1.75rem;
-      margin-bottom: 2.5rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border-radius: var(--radius-sm);
+      color: var(--accent-primary);
     }
 
-    .abstract-card h3 {
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--accent-blue);
-      margin-top: 0;
-      margin-bottom: 0.75rem;
+    ul.content-list {
+      color: var(--text-secondary);
+      margin-left: 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
 
-    .abstract-card p {
-      font-size: 1.05rem;
+    ul.content-list li {
+      padding-left: 0.25rem;
       line-height: 1.7;
+    }
+
+    ul.content-list li strong {
       color: var(--text-primary);
-      margin-bottom: 0;
     }
 
-    /* Data Tables */
-    .table-container {
-      overflow-x: auto;
-      margin: 1.5rem 0 2rem;
+    /* ==========================================================================
+       CALLOUT BOXES & ALERTS
+       ========================================================================== */
+    .callout-box {
+      background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      border-radius: 0.75rem;
-      background: var(--bg-surface);
+      border-radius: var(--radius-md);
+      padding: 1.35rem 1.6rem;
+      margin: 1.5rem 0 2rem;
+      box-shadow: var(--card-shadow);
+      border-left: 4px solid var(--accent-primary);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
 
-    table {
+    .callout-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .callout-icon {
+      color: var(--accent-primary);
+      display: inline-flex;
+    }
+
+    .callout-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .callout-danger {
+      border-left-color: var(--rose-500);
+      background: var(--bg-card);
+    }
+
+    .callout-danger .callout-icon,
+    .callout-danger .callout-title {
+      color: var(--rose-500);
+    }
+
+    /* ==========================================================================
+       TABLES COMPONENT
+       ========================================================================== */
+    .table-container {
+      margin: 1.75rem 0 2.25rem;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+    }
+
+    .table-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding: 0.85rem 1.25rem;
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .table-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .table-caption-text {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .table-count-badge {
+      font-size: 0.75rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: var(--radius-full);
+      background: var(--bg-subtle-hover);
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .table-filter-input {
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      outline: none;
+      min-width: 180px;
+      transition: border-color var(--transition-fast);
+    }
+
+    .table-filter-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+      max-width: 100%;
+    }
+
+    table.data-table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
     }
 
-    thead th {
-      background: var(--bg-surface-elevated);
-      color: var(--text-primary);
-      font-weight: 600;
-      padding: 0.85rem 1rem;
-      border-bottom: 1px solid var(--border-subtle);
-      font-family: var(--font-sans);
+    table.data-table thead th {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-weight: 650;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.85rem 1.15rem;
+      border-bottom: 1px solid var(--border-default);
       white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 5;
     }
 
-    tbody td {
-      padding: 0.85rem 1rem;
+    table.data-table tbody td {
+      padding: 0.85rem 1.15rem;
       border-bottom: 1px solid var(--border-subtle);
       color: var(--text-secondary);
+      vertical-align: middle;
+      font-variant-numeric: tabular-nums;
     }
 
-    tbody tr:last-child td {
+    table.data-table tbody tr:nth-child(even) {
+      background: var(--table-stripe);
+    }
+
+    table.data-table tbody tr:hover {
+      background: var(--table-hover);
+    }
+
+    table.data-table tbody tr:last-child td {
       border-bottom: none;
     }
 
-    tbody tr:hover {
-      background: rgba(255, 255, 255, 0.02);
-    }
-
     .metric-highlight {
-      color: var(--accent-emerald);
-      font-weight: 600;
+      color: var(--emerald-500) !important;
+      font-weight: 700;
       font-family: var(--font-mono);
     }
 
     .metric-warn {
-      color: var(--accent-rose);
-      font-weight: 600;
+      color: var(--rose-500) !important;
+      font-weight: 700;
       font-family: var(--font-mono);
     }
 
     .mono {
       font-family: var(--font-mono);
-      font-size: 0.85rem;
+      font-size: 0.84rem;
     }
 
-    /* Verdict Tags */
+    /* Verdict & Status Badges */
     .verdict-tag {
-      display: inline-block;
-      padding: 0.2rem 0.5rem;
-      border-radius: 0.25rem;
-      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.72rem;
       font-weight: 700;
       font-family: var(--font-mono);
+      letter-spacing: 0.04em;
       text-transform: uppercase;
+      white-space: nowrap;
     }
 
     .verdict-confirmed {
-      background: rgba(52, 211, 153, 0.15);
-      color: var(--accent-emerald);
-      border: 1px solid rgba(52, 211, 153, 0.3);
+      background: var(--emerald-subtle);
+      color: var(--emerald-500);
+      border: 1px solid var(--emerald-border);
     }
 
     .verdict-opposite {
-      background: rgba(251, 113, 133, 0.15);
-      color: var(--accent-rose);
-      border: 1px solid rgba(251, 113, 133, 0.3);
+      background: var(--rose-subtle);
+      color: var(--rose-500);
+      border: 1px solid var(--rose-border);
     }
 
     .verdict-false {
-      background: rgba(251, 191, 36, 0.15);
-      color: var(--accent-amber);
-      border: 1px solid rgba(251, 191, 36, 0.3);
+      background: var(--amber-subtle);
+      color: var(--amber-500);
+      border: 1px solid var(--amber-border);
     }
 
-    /* Callouts & Key Takeaways */
-    .callout-box {
-      background: var(--bg-surface-elevated);
+    .verdict-tier-1a {
+      background: var(--emerald-subtle);
+      color: var(--emerald-500);
+      border: 1px solid var(--emerald-border);
+    }
+
+    .verdict-tier-1b {
+      background: var(--sky-subtle);
+      color: var(--sky-500);
+      border: 1px solid var(--sky-border);
+    }
+
+    .verdict-tier-2 {
+      background: var(--amber-subtle);
+      color: var(--amber-500);
+      border: 1px solid var(--amber-border);
+    }
+
+    .table-footer-note {
+      padding: 0.65rem 1.25rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-subtle);
+    }
+
+    /* Empty State for Table */
+    .table-empty-state {
+      padding: 3rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      display: none;
+    }
+
+    .table-empty-state svg {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 0.75rem;
+      opacity: 0.5;
+    }
+
+    /* ==========================================================================
+       FIGURES, CHARTS & LIGHTBOX
+       ========================================================================== */
+    .figure-card {
+      margin: 2.25rem 0;
       border: 1px solid var(--border-subtle);
-      border-radius: 0.75rem;
-      padding: 1.25rem 1.5rem;
-      margin: 1.5rem 0;
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      transition: border-color var(--transition-fast);
     }
 
-    .callout-box h4 {
-      color: var(--accent-blue);
-      font-size: 0.95rem;
-      margin-bottom: 0.5rem;
+    .figure-card:hover {
+      border-color: var(--border-emphasis);
     }
 
-    .callout-danger {
-      border-left: 4px solid var(--accent-rose);
-      background: rgba(251, 113, 133, 0.08);
+    .figure-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.25rem;
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.8rem;
     }
 
-    .callout-danger h4 {
-      color: var(--accent-rose);
+    .figure-label {
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    /* Code Blocks & Architecture */
-    pre {
+    .figure-img-wrap {
+      padding: 1.5rem;
       background: #06090e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-in;
+      position: relative;
+    }
+
+    .figure-img-wrap img {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--radius-sm);
+      transition: transform var(--transition-base);
+    }
+
+    .figure-img-wrap:hover img {
+      transform: scale(1.008);
+    }
+
+    .figure-caption {
+      padding: 0.85rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      line-height: 1.55;
+    }
+
+    /* ==========================================================================
+       CODE BLOCKS & TIMELINE
+       ========================================================================== */
+    .code-block-card {
+      margin: 1.5rem 0 2rem;
       border: 1px solid var(--border-subtle);
-      border-radius: 0.6rem;
-      padding: 1.25rem;
+      border-radius: var(--radius-md);
+      background: var(--code-bg);
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.78rem;
+    }
+
+    .code-lang-tag {
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    pre.code-content {
+      padding: 1.25rem 1.25rem;
       overflow-x: auto;
       font-family: var(--font-mono);
-      font-size: 0.85rem;
-      line-height: 1.5;
-      color: #e2e8f0;
-      margin: 1.25rem 0;
+      font-size: 0.84rem;
+      line-height: 1.6;
+      color: var(--code-text);
+      margin: 0;
+      border: none;
+      background: transparent;
     }
 
-    /* Playbook Architecture */
-    .playbook-tier {
-      background: var(--bg-surface);
+    /* Formula Card */
+    .formula-card {
+      background: var(--code-bg);
       border: 1px solid var(--border-subtle);
-      border-radius: 0.75rem;
+      border-left: 4px solid var(--accent-primary);
+      border-radius: var(--radius-md);
       padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      color: var(--accent-primary-hover);
+      margin: 1.25rem 0 1.75rem;
+      line-height: 1.7;
+      box-shadow: var(--card-shadow);
+    }
+
+    /* ==========================================================================
+       PLAYBOOK TIERS COMPONENT
+       ========================================================================== */
+    .playbook-tiers-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+      margin: 1.75rem 0 2.25rem;
+    }
+
+    .playbook-tier {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.5rem 1.75rem;
+      box-shadow: var(--card-shadow);
+      transition: transform var(--transition-fast), border-color var(--transition-fast);
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.75rem;
+      position: relative;
+    }
+
+    .playbook-tier:hover {
+      border-color: var(--border-emphasis);
+      transform: translateY(-1px);
     }
 
     .tier-header {
@@ -399,631 +1116,2584 @@
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 0.75rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-subtle);
     }
 
-    .tier-title {
+    .tier-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .tier-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      text-transform: uppercase;
+    }
+
+    .tier-badge-1a {
+      background: var(--emerald-subtle);
+      color: var(--emerald-500);
+      border: 1px solid var(--emerald-border);
+    }
+
+    .tier-badge-1b {
+      background: var(--sky-subtle);
+      color: var(--sky-500);
+      border: 1px solid var(--sky-border);
+    }
+
+    .tier-badge-2 {
+      background: var(--amber-subtle);
+      color: var(--amber-500);
+      border: 1px solid var(--amber-border);
+    }
+
+    .tier-badge-3 {
+      background: var(--bg-subtle-hover);
+      color: var(--text-muted);
+      border: 1px solid var(--border-default);
+    }
+
+    .tier-name {
       font-weight: 700;
       color: var(--text-primary);
-      font-size: 1rem;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
     }
 
     .tier-precision {
       font-family: var(--font-mono);
-      font-size: 0.8rem;
-      padding: 0.2rem 0.5rem;
-      border-radius: 9999px;
-      background: rgba(52, 211, 153, 0.1);
-      color: var(--accent-emerald);
-      border: 1px solid rgba(52, 211, 153, 0.25);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-full);
+      background: var(--emerald-subtle);
+      color: var(--emerald-500);
+      border: 1px solid var(--emerald-border);
     }
 
-    /* Formula styling */
-    .formula-card {
-      background: #06090e;
-      border: 1px solid var(--border-subtle);
-      border-radius: 0.5rem;
-      padding: 1rem 1.25rem;
+    .tier-condition {
+      font-size: 0.88rem;
+      color: var(--text-primary);
+    }
+
+    .tier-condition code {
       font-family: var(--font-mono);
-      font-size: 0.9rem;
-      color: #7dd3fc;
-      margin: 1rem 0;
+      font-size: 0.85em;
+      color: var(--accent-primary);
+    }
+
+    .tier-action-desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
       line-height: 1.6;
     }
 
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--border-subtle);
-      padding-top: 2rem;
-      margin-top: 4rem;
-      text-align: center;
-      font-size: 0.85rem;
+    /* ==========================================================================
+       INTERACTIVE SPRINT ROI CALCULATOR WIDGET
+       ========================================================================== */
+    .calculator-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      padding: 1.75rem;
+      margin: 2rem 0;
+      box-shadow: var(--card-shadow);
+    }
+
+    .calculator-header {
+      margin-bottom: 1.25rem;
+    }
+
+    .calculator-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .calculator-sub {
+      font-size: 0.84rem;
       color: var(--text-muted);
     }
 
-    a {
-      color: var(--accent-blue);
-      text-decoration: none;
-      transition: color 0.15s;
+    .calc-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
     }
 
-    a:hover {
+    .calc-slider-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .calc-slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .calc-slider-val {
+      font-family: var(--font-mono);
+      color: var(--accent-primary);
+      font-weight: 700;
+    }
+
+    .calc-range-input {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border-default);
+      outline: none;
+    }
+
+    .calc-range-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: transform var(--transition-fast);
+    }
+
+    .calc-range-input::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .calc-results-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .calc-result-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1rem;
+    }
+
+    .calc-result-label {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .calc-result-val {
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .calc-result-sub {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* ==========================================================================
+       REPRODUCIBILITY & LINEAGE CARDS
+       ========================================================================== */
+    .repro-card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0 2rem;
+    }
+
+    .repro-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .repro-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .repro-step-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.45rem;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--accent-primary);
+    }
+
+    .repro-card-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+
+    .repro-card-desc {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .repro-card-link {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent-primary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+    }
+
+    .repro-card-link:hover {
       text-decoration: underline;
     }
 
-    @media (max-width: 640px) {
-      h1 { font-size: 1.85rem; }
-      .meta-bar { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-      .paper-container { padding: 1.5rem 1rem 4rem; }
+    /* Master Capstone Box */
+    .master-capstone-box {
+      background: var(--bg-card);
+      border: 1px solid var(--accent-border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+
+    .master-capstone-info {
+      max-width: 580px;
+    }
+
+    .master-capstone-title {
+      font-weight: 750;
+      font-size: 1.05rem;
+      color: var(--text-primary);
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .master-capstone-desc {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* ==========================================================================
+       MODALS & LIGHTBOX
+       ========================================================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      animation: fadeIn var(--transition-fast) forwards;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-emphasis);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 640px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      padding: 1.75rem;
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.4rem;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color var(--transition-fast), background-color var(--transition-fast);
+    }
+
+    .modal-close-btn:hover {
+      color: var(--text-primary);
+      background: var(--bg-subtle-hover);
+    }
+
+    /* Lightbox Modal Specifics */
+    .lightbox-modal .modal-card {
+      max-width: 95vw;
+      max-height: 95vh;
+      padding: 1rem;
+      background: #06090e;
+      border-color: var(--border-default);
+    }
+
+    .lightbox-img-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+    }
+
+    .lightbox-img-wrap img {
+      max-width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ==========================================================================
+       TOAST FEEDBACK
+       ========================================================================== */
+    .toast-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: auto;
+      background: var(--bg-card-elevated);
+      color: var(--text-primary);
+      border: 1px solid var(--border-emphasis);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transform: translateY(10px);
+      opacity: 0;
+      transition: all var(--transition-fast);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* ==========================================================================
+       FOOTER
+       ========================================================================== */
+    .site-footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 3rem 1.5rem 4rem;
+      background: var(--bg-surface);
+      transition: background-color var(--transition-base), border-color var(--transition-base);
+    }
+
+    .footer-inner {
+      max-width: 1360px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .footer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color var(--transition-fast);
+    }
+
+    .footer-links a:hover {
+      color: var(--accent-primary);
+    }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* Back to Top Floating Button */
+    .back-to-top-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 80;
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      color: var(--text-secondary);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--card-shadow);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: all var(--transition-fast);
+    }
+
+    .back-to-top-btn.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .back-to-top-btn:hover {
+      color: var(--text-primary);
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+    }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 1040px) {
+      .nav-links-wrap {
+        display: none;
+      }
+
+      .mobile-menu-btn {
+        display: inline-flex;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .repro-card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .calc-results-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+
+    @media (max-width: 768px) {
+      h1.paper-title {
+        font-size: 1.85rem;
+      }
+
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .table-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .table-filter-input {
+        width: 100%;
+      }
+
+      .footer-top,
+      .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    /* Mobile Drawer & Backdrop Overlay */
+    .mobile-drawer-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 998;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity var(--transition-base), visibility var(--transition-base);
+    }
+
+    .mobile-drawer-overlay.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .mobile-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 320px;
+      max-width: 86vw;
+      height: 100vh;
+      height: 100dvh;
+      background: var(--bg-card);
+      border-left: 1px solid var(--border-default);
+      z-index: 999;
+      padding: 1.25rem 1.25rem 2rem;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      transform: translateX(100%);
+      transition: transform var(--transition-smooth);
+      box-shadow: -14px 0 36px rgba(0, 0, 0, 0.55);
+    }
+
+    .mobile-drawer.active {
+      transform: translateX(0);
+    }
+
+    .mobile-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 0.85rem;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .mobile-drawer-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mobile-drawer-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .mobile-drawer-close-btn {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border-radius: var(--radius-sm);
+    }
+
+    .mobile-drawer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      flex: 1 1 auto;
+      overflow-y: auto;
+    }
+
+    .mobile-nav-link {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 0.7rem 0.85rem;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all var(--transition-fast);
+      min-height: 44px;
+    }
+
+    .mobile-nav-link:hover,
+    .mobile-nav-link:active {
+      background-color: var(--bg-subtle-hover);
+      color: var(--accent-primary);
+    }
+
+    .mobile-nav-num {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      width: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .mobile-nav-link:hover .mobile-nav-num {
+      color: var(--accent-primary);
+    }
+
+    .mobile-nav-arrow {
+      margin-left: auto;
+      color: var(--text-muted);
+      opacity: 0.5;
+      transition: transform var(--transition-fast), opacity var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .mobile-nav-link:hover .mobile-nav-arrow {
+      opacity: 1;
+      transform: translateX(3px);
+      color: var(--accent-primary);
+    }
+
+    .mobile-drawer-footer {
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<!-- Navigation Bar -->
-<div class="nav-bar">
-  <div class="nav-inner">
-    <div class="nav-brand">FlyRank ML Research</div>
-    <div class="nav-links">
-      <a href="#abstract">Abstract</a>
-      <a href="#data-contract">Data Contract</a>
-      <a href="#methodology">Methodology</a>
-      <a href="#signal-audit">Signal Audit</a>
-      <a href="#model-evaluation">Evaluation</a>
-      <a href="#memorization-gap">Memorization Gap</a>
-      <a href="#limitations">Limitations</a>
-      <a href="#editorial-playbook">Playbook</a>
-      <a href="#reproducibility">Reproducibility</a>
-    </div>
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress-track" aria-hidden="true">
+    <div class="reading-progress-bar" id="readingProgressBar"></div>
   </div>
-</div>
 
-<div class="paper-container">
+  <!-- Main Navigation Bar -->
+  <header class="site-nav" role="banner">
+    <div class="nav-container">
+      <a href="#hero" class="nav-brand">
+        <span>FlyRank Research</span>
+      </a>
 
-  <header>
-    <div class="badge-pill">Research Paper &bull; Applied Search Intelligence</div>
-    <h1>Beyond Static Rules: Machine Learning for Content Decay Prioritization in Search Operations</h1>
-    <div class="meta-bar">
-      <div class="meta-item"><strong>Cohort:</strong> Applied ML Research Group</div>
-      <div class="meta-item"><strong>Dataset:</strong> 30,000 URLs (32 Clients)</div>
-      <div class="meta-item"><strong>Validation:</strong> 5-Fold Client-Grouped CV</div>
-      <div class="meta-item"><strong>Date:</strong> September 2026</div>
+      <nav class="nav-links-wrap" aria-label="Paper Navigation">
+        <a href="#abstract" class="nav-link">Abstract</a>
+        <a href="#data-contract" class="nav-link">Contract</a>
+        <a href="#methodology" class="nav-link">Methodology</a>
+        <a href="#signal-audit" class="nav-link">Signal Audit</a>
+        <a href="#model-evaluation" class="nav-link">Evaluation</a>
+        <a href="#memorization-gap" class="nav-link">Memorization Gap</a>
+        <a href="#limitations" class="nav-link">Limitations</a>
+        <a href="#editorial-playbook" class="nav-link">Playbook</a>
+        <a href="#reproducibility" class="nav-link">Reproducibility</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button type="button" class="btn btn-secondary btn-sm" id="citeModalTriggerBtn" onclick="openCiteModal()"
+          title="Cite this research paper">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+            <path d="M6 6h10" />
+            <path d="M6 10h10" />
+          </svg>
+          <span>Cite</span>
+        </button>
+
+        <button type="button" class="btn-icon" id="themeToggleBtn" onclick="toggleTheme()"
+          aria-label="Toggle dark/light theme" title="Toggle color theme">
+          <!-- Sun Icon (shown in dark mode) -->
+          <svg class="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2" />
+            <path d="M12 20v2" />
+            <path d="m4.93 4.93 1.41 1.41" />
+            <path d="m17.66 17.66 1.41 1.41" />
+            <path d="M2 12h2" />
+            <path d="M20 12h2" />
+            <path d="m6.34 17.66-1.41 1.41" />
+            <path d="m19.07 4.93-1.41 1.41" />
+          </svg>
+          <!-- Moon Icon (shown in light mode) -->
+          <svg class="theme-icon-moon" style="display:none;" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+          </svg>
+        </button>
+
+        <button type="button" class="btn-icon mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()"
+          aria-label="Toggle navigation menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" x2="20" y1="12" y2="12" />
+            <line x1="4" x2="20" y1="6" y2="6" />
+            <line x1="4" x2="20" y1="18" y2="18" />
+          </svg>
+        </button>
+      </div>
     </div>
   </header>
 
-  <!-- Metric Highlights Grid -->
-  <div class="metrics-grid">
-    <div class="metric-card">
-      <div class="metric-card-label">Micro-Sprint Precision@20</div>
-      <div class="metric-card-val val-emerald">100.00%</div>
-      <div class="metric-card-sub">Random Forest (20/20 correct)</div>
+  <!-- Mobile Drawer Overlay & Menu (Placed outside header to ensure true fixed viewport positioning) -->
+  <div class="mobile-drawer-overlay" id="mobileDrawerOverlay" onclick="closeMobileMenu()" aria-hidden="true"></div>
+  <aside class="mobile-drawer" id="mobileDrawer" aria-hidden="true" aria-label="Mobile Navigation Menu">
+    <div class="mobile-drawer-header">
+      <div class="mobile-drawer-title-group">
+        <span class="mobile-drawer-title">Navigation</span>
+        <span class="badge-pill" style="font-size: 0.68rem; padding: 0.15rem 0.5rem; margin: 0;">9 Sections</span>
+      </div>
+      <button type="button" class="btn-icon mobile-drawer-close-btn" onclick="closeMobileMenu()"
+        aria-label="Close navigation menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" x2="6" y1="6" y2="18" />
+          <line x1="6" x2="18" y1="6" y2="18" />
+        </svg>
+      </button>
     </div>
-    <div class="metric-card">
-      <div class="metric-card-label">Sprint Precision@50</div>
-      <div class="metric-card-val val-emerald">88.00%</div>
-      <div class="metric-card-sub">+22.00% absolute lift over Rule Baseline</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-card-label">Deep Queue ROC-AUC</div>
-      <div class="metric-card-val val-blue">0.6872</div>
-      <div class="metric-card-sub">LightGBM under GroupKFold CV</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-card-label">Memorization Gap</div>
-      <div class="metric-card-val val-rose">+0.0832</div>
-      <div class="metric-card-sub">Cross-Domain Generalization Penalty</div>
-    </div>
-  </div>
 
-  <!-- Abstract -->
-  <div class="abstract-card" id="abstract">
-    <h3>Executive Abstract</h3>
-    <p>
-      For enterprise publishing platforms managing tens of thousands of URLs, natural ranking decay silently erodes organic search acquisition, yet manual audits across entire content libraries are commercially infeasible. We investigate whether machine learning models can rank decaying web assets more accurately than production heuristic rules using 90-day search performance and user engagement signals. Analyzing a cross-sectional benchmark of 30,000 mature content items across 32 enterprise publisher domains, we formulate content decay prioritization as an out-of-domain ranking task under strict 5-fold client-grouped cross-validation (<code>GroupKFold</code> on <code>client_id</code>). We establish a <strong>Dual-Model Decision Hierarchy</strong>: <strong>Random Forest</strong> operates as the high-confidence micro-sprint champion, delivering <strong>100.00% Precision@20</strong> and <strong>88.00% Precision@50</strong> (+22.00% absolute lift over the rule baseline), while <strong>LightGBM</strong> achieves <strong>0.6872 ROC-AUC</strong> and <strong>81.60% Precision@500</strong>, sustaining high precision across large monthly audit queues. Naive random cross-validation artificially inflated performance to <strong>0.7704 ROC-AUC</strong>, exposing an <strong>+0.0832 generalization gap</strong> driven by cross-domain memorization. Our findings provide a validated decision-support framework that enables editorial teams to allocate weekly refresh sprint budgets to high-recovery content while substantially reducing wasted editorial rewrites on stable pages.
-    </p>
-  </div>
-
-  <!-- Section 1: Introduction -->
-  <section id="introduction">
-    <h2>1. Introduction &amp; The Operational Problem</h2>
-    <p>
-      Digital content assets exhibit distinct lifecycle dynamics. After initial indexing, publication, and ranking maturation, high-ranking articles frequently experience <strong>content decay</strong>—gradual attrition in organic impressions, click-through volume, and search engine result page (SERP) positions. For enterprise publishers managing multi-client networks, detecting decay reactively via ad-hoc human discovery risks unobserved search impression attrition, leaving decaying pages unattended while editorial resources are spent without empirical prioritization.
-    </p>
-    <p>
-      To mitigate decay, content marketing operations deploy editorial refresh sprints. However, editorial hours represent a scarce, high-cost resource. An editorial team can typically revise only 20 to 100 articles during a weekly sprint. The central operational decision is therefore:
-    </p>
-    <div class="callout-box">
-      <h4>The Core Operational Decision</h4>
-      <p style="margin-bottom: 0; color: var(--text-primary); font-weight: 500;">
-        <em>Which decaying pages should an editorial team prioritize to refresh first to maximize organic traffic recovery while minimizing wasted editorial hours?</em>
-      </p>
+    <div class="mobile-drawer-links">
+      <a href="#abstract" class="mobile-nav-link" onclick="closeMobileMenu()"><span
+          class="mobile-nav-num">&bull;</span><span>Executive Abstract</span><svg class="mobile-nav-arrow" width="14"
+          height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg></a>
+      <a href="#introduction" class="mobile-nav-link" onclick="closeMobileMenu()"><span
+          class="mobile-nav-num">1</span><span>Operational Problem</span><svg class="mobile-nav-arrow" width="14"
+          height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg></a>
+      <a href="#data-contract" class="mobile-nav-link" onclick="closeMobileMenu()"><span
+          class="mobile-nav-num">2</span><span>Dataset &amp; Contract</span><svg class="mobile-nav-arrow" width="14"
+          height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg></a>
+      <a href="#methodology" class="mobile-nav-link" onclick="closeMobileMenu()"><span
+          class="mobile-nav-num">3</span><span>Methodology &amp; CV</span><svg class="mobile-nav-arrow" width="14"
+          height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg></a>
+      <a href="#signal-audit" class="mobile-nav-link" onclick="closeMobileMenu()"><span
+          class="mobile-nav-num">4</span><span>Signal Audit &amp; Findings</span><svg class="mobile-nav-arrow"
+          width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg></a>
+      <a href="#model-evaluation" class="mobile-nav-link" onclick="closeMobileMenu()"><span
+          class="mobile-nav-num">5</span><span>Model Evaluation</span><svg class="mobile-nav-arrow" width="14"
+          height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg></a>
+      <a href="#memorization-gap" class="mobile-nav-link" onclick="closeMobileMenu()"><span
+          class="mobile-nav-num">6</span><span>The Memorization Gap</span><svg class="mobile-nav-arrow" width="14"
+          height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg></a>
+      <a href="#limitations" class="mobile-nav-link" onclick="closeMobileMenu()"><span
+          class="mobile-nav-num">7</span><span>Limitations &amp; Scope</span><svg class="mobile-nav-arrow" width="14"
+          height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg></a>
+      <a href="#editorial-playbook" class="mobile-nav-link" onclick="closeMobileMenu()"><span
+          class="mobile-nav-num">8</span><span>Editorial Playbook</span><svg class="mobile-nav-arrow" width="14"
+          height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg></a>
+      <a href="#reproducibility" class="mobile-nav-link" onclick="closeMobileMenu()"><span
+          class="mobile-nav-num">9</span><span>Reproducibility</span><svg class="mobile-nav-arrow" width="14"
+          height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg></a>
     </div>
-    <p>
-      In current production environments, content strategists rely on hand-crafted heuristic rules (e.g., flagging any article older than 180 days that has dropped in impressions). While simple and transparent, static rules suffer from critical operational failure modes:
-    </p>
-    <ul style="color: var(--text-secondary); margin-left: 1.5rem; margin-bottom: 1.25rem;">
-      <li><strong>Linear and Monolithic Assumptions:</strong> They assume decay risk is uniformly monotonic with age, ignoring that legacy evergreen content often remains stable while recently launched content experiences high post-index volatility.</li>
-      <li><strong>Engagement Blindness:</strong> They fail to model nonlinear interactions between search rank and user engagement (e.g., strong on-page CTR and scroll depth protecting striking-distance URLs from ranking drops).</li>
-      <li><strong>Severe Portfolio Concentration:</strong> Static threshold rules rank entire batches of simultaneously published articles from single clients at the top of the queue, starving other client domains of editorial bandwidth unless explicit client quotas are applied.</li>
-    </ul>
-    <p>
-      This research demonstrates that machine learning earns its place over static heuristics by learning complex, cross-signal interactions to provide calibrated, rank-ordered decision support.
-    </p>
-  </section>
 
-  <!-- Section 2: Data & Contract -->
-  <section id="data-contract">
-    <h2>2. Dataset &amp; Data Contract Verification</h2>
-    <p>
-      The empirical foundation for this study is <code>content_refresh_anonymized.csv</code>, comprising <strong>30,000 unique content assets</strong> across <strong>32 pseudonymized client domains</strong>. In accordance with our formal Data Contract (<code>notebooks/02_data_contract.ipynb</code>):
-    </p>
-    <ul style="color: var(--text-secondary); margin-left: 1.5rem; margin-bottom: 1.25rem;">
-      <li><strong>Unit of Analysis (Grain):</strong> Exactly 1 row = 1 unique content asset (<code>content_id</code>). Verified 0 duplicates and 0 nulls across the 30,000 rows.</li>
-      <li><strong>Search Visibility Floor:</strong> <code>impressions_90d &ge; 1</code> (100% compliant; every asset is confirmed indexed by Google Search Console).</li>
-      <li><strong>Lifecycle Maturity Floor:</strong> <code>content_age_days &ge; 90</code> (100% compliant; minimum age is 90 days, maximum 564 days).</li>
-      <li><strong>Allowable Range Assertions:</strong> Non-negative economics (<code>cpc &ge; 0</code>, <code>competition &isin; [0, 1]</code>) and strict percentage bounds (<code>engagement_rate &isin; [0, 100]</code>).</li>
-    </ul>
+    <div class="mobile-drawer-footer">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="closeMobileMenu(); openCiteModal();"
+        style="width: 100%; justify-content: center;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+          <path d="M6 6h10" />
+          <path d="M6 10h10" />
+        </svg>
+        <span>Cite This Research</span>
+      </button>
+    </div>
+  </aside>
 
-    <pre><code>Observation Window Architecture & Retrospective Overlap:
-|--------------------- Trailing 90-Day Observation Window (Features) ---------------------|
+  <!-- Page Layout (Sidebar TOC + Main Content) -->
+  <div class="page-layout">
+
+    <!-- Main Research Paper Column -->
+    <main class="paper-main" id="hero" role="main">
+
+      <!-- Hero Header -->
+      <header class="hero-header">
+
+
+        <h1 class="paper-title">Beyond Static Rules: Machine Learning for Content Decay Prioritization in Search
+          Operations</h1>
+
+        <div class="meta-bar">
+          <div class="meta-item">
+            <span class="meta-icon" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </span>
+            <span><strong>Cohort:</strong> Nashidul Sarker</span>
+          </div>
+
+          <div class="meta-item">
+            <span class="meta-icon" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2" />
+                <path d="M3 9h18" />
+                <path d="M9 21V9" />
+              </svg>
+            </span>
+            <span><strong>Dataset:</strong> 30,000 URLs (32 Clients)</span>
+          </div>
+
+          <div class="meta-item">
+            <span class="meta-icon" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 14 14" />
+              </svg>
+            </span>
+            <span><strong>Validation:</strong> 5-Fold Client-Grouped CV</span>
+          </div>
+
+          <div class="meta-item">
+            <span class="meta-icon" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                <line x1="16" x2="16" y1="2" y2="6" />
+                <line x1="8" x2="8" y1="2" y2="6" />
+                <line x1="3" x2="21" y1="10" y2="10" />
+              </svg>
+            </span>
+            <span><strong>Date:</strong> September 2026</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Key Metric Highlights Grid -->
+      <div class="metrics-grid" role="region" aria-label="Key Performance Indicators">
+        <div class="metric-card accent-emerald">
+          <div class="metric-card-header">
+            <span class="metric-card-label">Micro-Sprint Precision@20</span>
+            <span class="metric-badge-pill badge-lift-emerald">+30.00% Lift</span>
+          </div>
+          <div class="metric-card-val val-emerald">100.00%</div>
+          <div class="metric-card-sub">Random Forest (20/20 correct decaying URLs)</div>
+        </div>
+
+        <div class="metric-card accent-emerald">
+          <div class="metric-card-header">
+            <span class="metric-card-label">Sprint Precision@50</span>
+            <span class="metric-badge-pill badge-lift-emerald">+22.00% Lift</span>
+          </div>
+          <div class="metric-card-val val-emerald">88.00%</div>
+          <div class="metric-card-sub">Absolute lift over static Heuristic Rule Baseline</div>
+        </div>
+
+        <div class="metric-card accent-sky">
+          <div class="metric-card-header">
+            <span class="metric-card-label">Deep Queue ROC-AUC</span>
+            <span class="metric-badge-pill badge-info-sky">Honest CV</span>
+          </div>
+          <div class="metric-card-val val-blue">0.6872</div>
+          <div class="metric-card-sub">LightGBM under client-isolated cross-validation</div>
+        </div>
+
+        <div class="metric-card accent-rose">
+          <div class="metric-card-header">
+            <span class="metric-card-label">Memorization Gap</span>
+            <span class="metric-badge-pill badge-penalty-rose">Gap Penalty</span>
+          </div>
+          <div class="metric-card-val val-rose">+0.0832</div>
+          <div class="metric-card-sub">Cross-Domain Generalization Penalty</div>
+        </div>
+      </div>
+
+      <!-- Executive Abstract -->
+      <article class="abstract-card" id="abstract">
+        <div class="abstract-header">
+          <div class="abstract-tag">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" x2="8" y1="13" y2="13" />
+              <line x1="16" x2="8" y1="17" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+            <span>Executive Abstract</span>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="copyAbstractBtn"
+            title="Copy abstract to clipboard">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+            </svg>
+            <span>Copy Text</span>
+          </button>
+        </div>
+        <p id="abstractContentText">
+          For enterprise publishing platforms managing tens of thousands of URLs, natural ranking decay silently erodes
+          organic search acquisition, yet manual audits across entire content libraries are commercially infeasible. We
+          investigate whether machine learning models can rank decaying web assets more accurately than production
+          heuristic rules using 90-day search performance and user engagement signals. Analyzing a cross-sectional
+          benchmark of 30,000 mature content items across 32 enterprise publisher domains, we formulate content decay
+          prioritization as an out-of-domain ranking task under strict 5-fold client-grouped cross-validation
+          (<code>GroupKFold</code> on <code>client_id</code>). We establish a <strong>Dual-Model Decision
+            Hierarchy</strong>: <strong>Random Forest</strong> operates as the high-confidence micro-sprint champion,
+          delivering <strong>100.00% Precision@20</strong> and <strong>88.00% Precision@50</strong> (+22.00% absolute
+          lift over the rule baseline), while <strong>LightGBM</strong> achieves <strong>0.6872 ROC-AUC</strong> and
+          <strong>81.60% Precision@500</strong>, sustaining high precision across large monthly audit queues. Naive
+          random cross-validation artificially inflated performance to <strong>0.7704 ROC-AUC</strong>, exposing an
+          <strong>+0.0832 generalization gap</strong> driven by cross-domain memorization. Our findings provide a
+          validated decision-support framework that enables editorial teams to allocate weekly refresh sprint budgets to
+          high-recovery content while substantially reducing wasted editorial rewrites on stable pages.
+        </p>
+      </article>
+
+      <!-- Section 1: Introduction & The Operational Problem -->
+      <section class="paper-section" id="introduction">
+        <h2 class="section-heading">
+          <span class="section-num">1</span>
+          <span>Introduction &amp; The Operational Problem</span>
+        </h2>
+        <p>
+          Digital content assets exhibit distinct lifecycle dynamics. After initial indexing, publication, and ranking
+          maturation, high-ranking articles frequently experience <strong>content decay</strong>—gradual attrition in
+          organic impressions, click-through volume, and search engine result page (SERP) positions. For enterprise
+          publishers managing multi-client networks, detecting decay reactively via ad-hoc human discovery risks
+          unobserved search impression attrition, leaving decaying pages unattended while editorial resources are spent
+          without empirical prioritization.
+        </p>
+        <p>
+          To mitigate decay, content marketing operations deploy editorial refresh sprints. However, editorial hours
+          represent a scarce, high-cost resource. An editorial team can typically revise only 20 to 100 articles during
+          a weekly sprint. The central operational decision is therefore:
+        </p>
+
+        <div class="callout-box">
+          <div class="callout-header">
+            <span class="callout-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                <line x1="12" x2="12.01" y1="17" y2="17" />
+              </svg>
+            </span>
+            <span class="callout-title">The Core Operational Decision</span>
+          </div>
+          <p style="margin-bottom: 0; color: var(--text-primary); font-size: 1.05rem; font-weight: 500;">
+            <em>Which decaying pages should an editorial team prioritize to refresh first to maximize organic traffic
+              recovery while minimizing wasted editorial hours?</em>
+          </p>
+        </div>
+
+        <p>
+          In current production environments, content strategists rely on hand-crafted heuristic rules (e.g., flagging
+          any article older than 180 days that has dropped in impressions). While simple and transparent, static rules
+          suffer from critical operational failure modes:
+        </p>
+
+        <ul class="content-list">
+          <li><strong>Linear and Monolithic Assumptions:</strong> They assume decay risk is uniformly monotonic with
+            age, ignoring that legacy evergreen content often remains stable while recently launched content experiences
+            high post-index volatility.</li>
+          <li><strong>Engagement Blindness:</strong> They fail to model nonlinear interactions between search rank and
+            user engagement (e.g., strong on-page CTR and scroll depth protecting striking-distance URLs from ranking
+            drops).</li>
+          <li><strong>Severe Portfolio Concentration:</strong> Static threshold rules rank entire batches of
+            simultaneously published articles from single clients at the top of the queue, starving other client domains
+            of editorial bandwidth unless explicit client quotas are applied.</li>
+        </ul>
+
+        <p>
+          This research demonstrates that machine learning earns its place over static heuristics by learning complex,
+          cross-signal interactions to provide calibrated, rank-ordered decision support.
+        </p>
+      </section>
+
+      <!-- Section 2: Dataset & Data Contract Verification -->
+      <section class="paper-section" id="data-contract">
+        <h2 class="section-heading">
+          <span class="section-num">2</span>
+          <span>Dataset &amp; Data Contract Verification</span>
+        </h2>
+        <p>
+          The empirical foundation for this study is <code>content_refresh_anonymized.csv</code>, comprising
+          <strong>30,000 unique content assets</strong> across <strong>32 pseudonymized client domains</strong>. In
+          accordance with our formal Data Contract (<code>notebooks/02_data_contract.ipynb</code>):
+        </p>
+
+        <ul class="content-list">
+          <li><strong>Unit of Analysis (Grain):</strong> Exactly 1 row = 1 unique content asset
+            (<code>content_id</code>). Verified 0 duplicates and 0 nulls across the 30,000 rows.</li>
+          <li><strong>Search Visibility Floor:</strong> <code>impressions_90d &ge; 1</code> (100% compliant; every asset
+            is confirmed indexed by Google Search Console).</li>
+          <li><strong>Lifecycle Maturity Floor:</strong> <code>content_age_days &ge; 90</code> (100% compliant; minimum
+            age is 90 days, maximum 564 days).</li>
+          <li><strong>Allowable Range Assertions:</strong> Non-negative economics (<code>cpc &ge; 0</code>,
+            <code>competition &isin; [0, 1]</code>) and strict percentage bounds
+            (<code>engagement_rate &isin; [0, 100]</code>).
+          </li>
+        </ul>
+
+        <div class="code-block-card">
+          <div class="code-header">
+            <span class="code-lang-tag">Observation Window Architecture &amp; Retrospective Overlap</span>
+            <button type="button" class="btn-icon btn-sm"
+              onclick="navigator.clipboard.writeText(this.closest('.code-block-card').querySelector('pre').innerText); showToast('Timeline copied');"
+              title="Copy ASCII diagram">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+              </svg>
+            </button>
+          </div>
+          <pre
+            class="code-content"><code>|--------------------- Trailing 90-Day Observation Window (Features) ---------------------|
 |----- Days 61-90 Back -----|----- Days 31-60 Back (prev_30d) -----|----- Days 1-30 Back (last_30d) -----| [Export t_0]
                                                                      ^__________ Target Evaluation Window __|</code></pre>
+        </div>
 
-    <p>
-      <strong>Structural Missingness Audit:</strong> In Google Search Console and GA4 data, missingness is rarely Missing Completely At Random (MCAR). For instance, <code>feedly article</code> entries exhibit 100% missingness for keyword metrics (search volume, CPC, competition), whereas <code>comparison article</code> has 0% missingness. Explicit boolean missingness indicators (<code>has_*</code>) were engineered to prevent blind imputation from injecting artificial category signals into models.
-    </p>
-  </section>
+        <p>
+          <strong>Structural Missingness Audit:</strong> In Google Search Console and GA4 data, missingness is rarely
+          Missing Completely At Random (MCAR). For instance, <code>feedly article</code> entries exhibit 100%
+          missingness for keyword metrics (search volume, CPC, competition), whereas <code>comparison article</code> has
+          0% missingness. Explicit boolean missingness indicators (<code>has_*</code>) were engineered to prevent blind
+          imputation from injecting artificial category signals into models.
+        </p>
+      </section>
 
-  <!-- Section 3: Methodology & Target Separation -->
-  <section id="methodology">
-    <h2>3. Methodology &amp; Validation Design</h2>
-    <p>
-      To transition from heuristic rules to empirical machine learning without circular bias, we formalized objective ground-truth labels and a strict target-separation protocol (<code>notebooks/02_data_contract.ipynb</code>, <code>notebooks/06_leakage_and_validation.ipynb</code>).
-    </p>
+      <!-- Section 3: Methodology & Validation Design -->
+      <section class="paper-section" id="methodology">
+        <h2 class="section-heading">
+          <span class="section-num">3</span>
+          <span>Methodology &amp; Validation Design</span>
+        </h2>
+        <p>
+          To transition from heuristic rules to empirical machine learning without circular bias, we formalized
+          objective ground-truth labels and a strict target-separation protocol
+          (<code>notebooks/02_data_contract.ipynb</code>, <code>notebooks/06_leakage_and_validation.ipynb</code>).
+        </p>
 
-    <h3>3.1 Target Label Formulation</h3>
-    <p>
-      The ground truth binary outcome <strong>Content Decay (<code>is_declining_label</code>)</strong> is defined objectively based on observed performance trajectory over trailing 30-day intervals:
-    </p>
+        <h3 class="sub-heading">3.1 Target Label Formulation</h3>
+        <p>
+          The ground truth binary outcome <strong>Content Decay (<code>is_declining_label</code>)</strong> is defined
+          objectively based on observed performance trajectory over trailing 30-day intervals:
+        </p>
 
-    <div class="formula-card">
-      trend_pct = ((impressions_last_30d - impressions_prev_30d) / impressions_prev_30d) &times; 100<br>
-      is_declining_label = 1 if trend_direction == 'down' (trend_pct &lt; -20.0%) else 0
-    </div>
+        <div class="formula-card">
+          trend_pct = ((impressions_last_30d - impressions_prev_30d) / impressions_prev_30d) &times; 100<br>
+          is_declining_label = 1 if trend_direction == 'down' (trend_pct &lt; -20.0%) else 0
+        </div>
 
-    <p>
-      In this population, declining articles represent <strong>54.21%</strong> (<em>n</em> = 16,262), establishing a balanced, well-powered natural base rate.
-    </p>
+        <p>
+          In this population, declining articles represent <strong>54.21%</strong> (<em>n</em> = 16,262), establishing a
+          balanced, well-powered natural base rate.
+        </p>
 
-    <h3>3.2 Leakage Hunting &amp; Target-Separation Protocol</h3>
-    <p>
-      Per <code>skills/hunting-leakage-and-validating/SKILL.md</code>, feature pipelines must enforce strict temporal and logical separation between features and the target label:
-    </p>
-    <ul style="color: var(--text-secondary); margin-left: 1.5rem; margin-bottom: 1.25rem;">
-      <li><strong>Prohibited Target Variables:</strong> <code>trend_pct</code> and <code>trend_direction</code> are permanently excluded from feature space.</li>
-      <li><strong>Prohibited Sub-Interval Windows:</strong> Columns <code>impressions_last_30d</code>, <code>clicks_last_30d</code>, <code>sessions_last_30d</code>, <code>impressions_prev_30d</code>, <code>clicks_prev_30d</code>, and <code>sessions_prev_30d</code> overlap with the label formulation window and are strictly excluded.</li>
-      <li><strong>Retrospective Diagnostic Disclosure:</strong> Because the dataset provides 90-day aggregations (<code>impressions_90d</code>, <code>avg_position</code>), these metrics mathematically subsume the trailing 30-day evaluation window. We explicitly frame this study as <strong>concurrent diagnostic prioritization (nowcasting decay)</strong> rather than forward-looking time-series forecasting.</li>
-      <li><strong>Zero Product Decision Inputs:</strong> FlyRank's internal rule-based heuristic tags (such as <code>health_score</code>, <code>priority_score</code>, and <code>action_type</code>) are treated strictly as baselines to beat, never as model features.</li>
-    </ul>
+        <h3 class="sub-heading">3.2 Leakage Hunting &amp; Target-Separation Protocol</h3>
+        <p>
+          Per <code>skills/hunting-leakage-and-validating/SKILL.md</code>, feature pipelines must enforce strict
+          temporal and logical separation between features and the target label:
+        </p>
 
-    <div class="callout-box callout-danger">
-      <h4>The Controlled Confession Test</h4>
-      <p style="margin-bottom: 0; color: var(--text-primary);">
-        In <code>notebooks/06_leakage_and_validation.ipynb</code>, we deliberately injected the prohibited target component <code>trend_pct</code> into the training harness. The validation ROC-AUC immediately collapsed to a perfect <strong>1.0000</strong> with 24.2% of tree splits concentrating on that single leaked column. Removing it restored realistic performance (<strong>0.6872 ROC-AUC</strong>), proving that our validation suite actively detects leakage rather than assuming correctness.
-      </p>
-    </div>
+        <ul class="content-list">
+          <li><strong>Prohibited Target Variables:</strong> <code>trend_pct</code> and <code>trend_direction</code> are
+            permanently excluded from feature space.</li>
+          <li><strong>Prohibited Sub-Interval Windows:</strong> Columns <code>impressions_last_30d</code>,
+            <code>clicks_last_30d</code>, <code>sessions_last_30d</code>, <code>impressions_prev_30d</code>,
+            <code>clicks_prev_30d</code>, and <code>sessions_prev_30d</code> overlap with the label formulation window
+            and are strictly excluded.
+          </li>
+          <li><strong>Retrospective Diagnostic Disclosure:</strong> Because the dataset provides 90-day aggregations
+            (<code>impressions_90d</code>, <code>avg_position</code>), these metrics mathematically subsume the trailing
+            30-day evaluation window. We explicitly frame this study as <strong>concurrent diagnostic prioritization
+              (nowcasting decay)</strong> rather than forward-looking time-series forecasting.</li>
+          <li><strong>Zero Product Decision Inputs:</strong> FlyRank's internal rule-based heuristic tags (such as
+            <code>health_score</code>, <code>priority_score</code>, and <code>action_type</code>) are treated strictly
+            as baselines to beat, never as model features.
+          </li>
+        </ul>
 
-    <h3>3.3 Out-of-Domain Client-Grouped Cross-Validation</h3>
-    <p>
-      Standard random cross-validation allows an algorithm to memorize client-specific templates, internal linking architecture, and domain authority. To evaluate true commercial generalizability, we implemented <strong>5-Fold Client-Grouped Cross-Validation (<code>GroupKFold</code> on <code>client_id</code>)</strong>. All 30,000 URLs were partitioned such that an entire client portfolio is either wholly in training or wholly in validation.
-    </p>
-  </section>
+        <div class="callout-box callout-danger">
+          <div class="callout-header">
+            <span class="callout-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                <line x1="12" x2="12" y1="9" y2="13" />
+                <line x1="12" x2="12.01" y1="17" y2="17" />
+              </svg>
+            </span>
+            <span class="callout-title">The Controlled Confession Test</span>
+          </div>
+          <p style="margin-bottom: 0; color: var(--text-primary);">
+            In <code>notebooks/06_leakage_and_validation.ipynb</code>, we deliberately injected the prohibited target
+            component <code>trend_pct</code> into the training harness. The validation ROC-AUC immediately collapsed to
+            a perfect <strong>1.0000</strong> with 24.2% of tree splits concentrating on that single leaked column.
+            Removing it restored realistic performance (<strong>0.6872 ROC-AUC</strong>), proving that our validation
+            suite actively detects leakage rather than assuming correctness.
+          </p>
+        </div>
 
-  <!-- Section 4: Signal Audit -->
-  <section id="signal-audit">
-    <h2>4. Signal Audit: Empirical Findings &amp; Feature Register</h2>
-    <p>
-      Before training models, we conducted formal hypothesis tests (<em>n</em> &ge; 50 floor per cell) with effect sizes (Cohen's <em>h</em>) to evaluate common SEO beliefs (<code>notebooks/03_signal_audit.ipynb</code>):
-    </p>
+        <h3 class="sub-heading">3.3 Out-of-Domain Client-Grouped Cross-Validation</h3>
+        <p>
+          Standard random cross-validation allows an algorithm to memorize client-specific templates, internal linking
+          architecture, and domain authority. To evaluate true commercial generalizability, we implemented
+          <strong>5-Fold Client-Grouped Cross-Validation (<code>GroupKFold</code> on <code>client_id</code>)</strong>.
+          All 30,000 URLs were partitioned such that an entire client portfolio is either wholly in training or wholly
+          in validation.
+        </p>
+      </section>
 
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Signal Hypothesis</th>
-            <th>Popular SEO Belief</th>
-            <th>Empirical Evidence (n, Rates)</th>
-            <th>Cohen's h</th>
-            <th>Formal Verdict</th>
-            <th>Modeling Decision</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Content Age</strong></td>
-            <td>"Older content decays faster due to staleness"</td>
-            <td>31–90d: <strong>66.87%</strong> (<em>n</em>=492) vs. Legacy &gt;365d: <strong>42.63%</strong> (<em>n</em>=6,360)</td>
-            <td class="mono">0.495 (Med)</td>
-            <td><span class="verdict-tag verdict-opposite">OPPOSITE</span></td>
-            <td><strong>KEPT:</strong> Encoded as non-linear age tiers. Post-launch content experiences highest decay.</td>
-          </tr>
-          <tr>
-            <td><strong>Word Count</strong></td>
-            <td>"Long-form content protects against decay"</td>
-            <td>&gt;3,500w: <strong>59.68%</strong> (<em>n</em>=6,285) vs. &lt;1,000w: <strong>20.66%</strong> (<em>n</em>=973)</td>
-            <td class="mono">0.822 (Lrg)</td>
-            <td><span class="verdict-tag verdict-opposite">OPPOSITE</span></td>
-            <td><strong>KEPT:</strong> Confounder control. Short content comprises low-competition navigational tools.</td>
-          </tr>
-          <tr>
-            <td><strong>Position Tier</strong></td>
-            <td>"Striking distance (pos 11–20) decays faster than Page 1"</td>
-            <td>Striking: <strong>60.95%</strong> (<em>n</em>=7,304) vs. Top 3: <strong>24.08%</strong> (<em>n</em>=2,321)</td>
-            <td class="mono">0.763 (Lrg)</td>
-            <td><span class="verdict-tag verdict-confirmed">CONFIRMED</span></td>
-            <td><strong>KEPT:</strong> Primary ranking signal. Striking distance is highest-risk SERP boundary.</td>
-          </tr>
-          <tr>
-            <td><strong>AI Referral Traffic</strong></td>
-            <td>"AI referral traffic protects against organic decay"</td>
-            <td>With AI: <strong>55.28%</strong> (<em>n</em>=1,930) vs. No AI: <strong>54.13%</strong> (<em>n</em>=28,070)</td>
-            <td class="mono">0.023 (Neg)</td>
-            <td><span class="verdict-tag verdict-false">FALSE</span></td>
-            <td><strong>KEPT FOR TREE INTERACTION:</strong> Univariate delta negligible (+1.15%). Retained for non-linear trees.</td>
-          </tr>
-          <tr>
-            <td><strong>Traffic Skewness</strong></td>
-            <td>"Search metrics follow normal distributions"</td>
-            <td>Raw <code>impressions_90d</code> skew = 11.38; <code>log1p</code> skew = -0.39</td>
-            <td class="mono">N/A</td>
-            <td><span class="verdict-tag verdict-confirmed">CONFIRMED</span></td>
-            <td><strong>KEPT:</strong> Mandatory <code>log1p</code> transformation on all raw volume counts.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <!-- Section 4: Signal Audit -->
+      <section class="paper-section" id="signal-audit">
+        <h2 class="section-heading">
+          <span class="section-num">4</span>
+          <span>Signal Audit: Empirical Findings &amp; Feature Register</span>
+        </h2>
+        <p>
+          Before training models, we conducted formal hypothesis tests (<em>n</em> &ge; 50 floor per cell) with effect
+          sizes (Cohen's <em>h</em>) to evaluate common SEO beliefs (<code>notebooks/03_signal_audit.ipynb</code>):
+        </p>
 
-    <div style="margin: 2rem 0; text-align: center;">
-      <img src="img/signal_audit_verdicts.png" alt="Signal Audit Empirical Verdicts" style="max-width: 100%; height: auto; border-radius: 0.75rem; border: 1px solid var(--border-subtle); box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;"><em>Figure 1: Empirical decay rates by SERP position tier (showing striking distance risk peak) and content age tier (showing elevated post-launch vulnerability).</em></p>
-    </div>
-  </section>
+        <div class="table-container">
+          <div class="table-toolbar">
+            <div class="table-title-wrap">
+              <span class="table-caption-text">Empirical Signal Audit Register</span>
+              <span class="table-count-badge">5 Hypotheses Audited</span>
+            </div>
+            <input type="text" class="table-filter-input" id="signalFilterInput" oninput="filterSignalTable()"
+              onkeyup="filterSignalTable()" placeholder="Filter signals (e.g. Age, SERP)..."
+              aria-label="Filter signal hypotheses">
+          </div>
 
-  <!-- Section 5: Model Evaluation -->
-  <section id="model-evaluation">
-    <h2>5. Model Evaluation &amp; The Dual-Model Framework</h2>
-    <p>
-      We benchmarked three machine learning architectures against our transparent heuristic baseline, a simple 1-feature volume sort, and the natural base rate. All metrics represent strictly out-of-fold predictions gathered across all 32 client folds under client-grouped CV:
-    </p>
+          <div class="table-scroll">
+            <table class="data-table" id="signalTable">
+              <thead>
+                <tr>
+                  <th>Signal Hypothesis</th>
+                  <th>Popular SEO Belief</th>
+                  <th>Empirical Evidence (n, Rates)</th>
+                  <th>Cohen's h</th>
+                  <th>Formal Verdict</th>
+                  <th>Modeling Decision</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Content Age</strong></td>
+                  <td>"Older content decays faster due to staleness"</td>
+                  <td>31–90d: <strong>66.87%</strong> (<em>n</em>=492) vs. Legacy &gt;365d: <strong>42.63%</strong>
+                    (<em>n</em>=6,360)</td>
+                  <td class="mono">0.495 (Med)</td>
+                  <td><span class="verdict-tag verdict-opposite">&#x21C5; OPPOSITE</span></td>
+                  <td><strong>KEPT:</strong> Encoded as non-linear age tiers. Post-launch content experiences highest
+                    decay.</td>
+                </tr>
+                <tr>
+                  <td><strong>Word Count</strong></td>
+                  <td>"Long-form content protects against decay"</td>
+                  <td>&gt;3,500w: <strong>59.68%</strong> (<em>n</em>=6,285) vs. &lt;1,000w: <strong>20.66%</strong>
+                    (<em>n</em>=973)</td>
+                  <td class="mono">0.822 (Lrg)</td>
+                  <td><span class="verdict-tag verdict-opposite">&#x21C5; OPPOSITE</span></td>
+                  <td><strong>KEPT:</strong> Confounder control. Short content comprises low-competition navigational
+                    tools.</td>
+                </tr>
+                <tr>
+                  <td><strong>Position Tier</strong></td>
+                  <td>"Striking distance (pos 11–20) decays faster than Page 1"</td>
+                  <td>Striking: <strong>60.95%</strong> (<em>n</em>=7,304) vs. Top 3: <strong>24.08%</strong>
+                    (<em>n</em>=2,321)</td>
+                  <td class="mono">0.763 (Lrg)</td>
+                  <td><span class="verdict-tag verdict-confirmed">&#x2713; CONFIRMED</span></td>
+                  <td><strong>KEPT:</strong> Primary ranking signal. Striking distance is highest-risk SERP boundary.
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>AI Referral Traffic</strong></td>
+                  <td>"AI referral traffic protects against organic decay"</td>
+                  <td>With AI: <strong>55.28%</strong> (<em>n</em>=1,930) vs. No AI: <strong>54.13%</strong>
+                    (<em>n</em>=28,070)</td>
+                  <td class="mono">0.023 (Neg)</td>
+                  <td><span class="verdict-tag verdict-false">&#x2717; FALSE</span></td>
+                  <td><strong>KEPT FOR TREE INTERACTION:</strong> Univariate delta negligible (+1.15%). Retained for
+                    non-linear trees.</td>
+                </tr>
+                <tr>
+                  <td><strong>Traffic Skewness</strong></td>
+                  <td>"Search metrics follow normal distributions"</td>
+                  <td>Raw <code>impressions_90d</code> skew = 11.38; <code>log1p</code> skew = -0.39</td>
+                  <td class="mono">N/A</td>
+                  <td><span class="verdict-tag verdict-confirmed">&#x2713; CONFIRMED</span></td>
+                  <td><strong>KEPT:</strong> Mandatory <code>log1p</code> transformation on all raw volume counts.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-empty-state" id="signalEmptyState">
+            <p>No matching signal hypotheses found.</p>
+          </div>
+        </div>
 
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Method / Model Architecture</th>
-            <th>ROC-AUC</th>
-            <th>Brier Score</th>
-            <th>P@20</th>
-            <th>P@50</th>
-            <th>P@100</th>
-            <th>P@250</th>
-            <th>P@500</th>
-            <th>P@1000</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Natural Base Rate (Random Guess)</strong></td>
-            <td class="mono">0.5000</td>
-            <td class="mono">0.2482</td>
-            <td>54.21%</td>
-            <td>54.21%</td>
-            <td>54.21%</td>
-            <td>54.21%</td>
-            <td>54.21%</td>
-            <td>54.21%</td>
-          </tr>
-          <tr>
-            <td><strong>Simple Heuristic (Raw Impression Sort)</strong></td>
-            <td class="mono">0.5845</td>
-            <td class="mono">N/A*</td>
-            <td>45.00%</td>
-            <td>42.00%</td>
-            <td>38.00%</td>
-            <td>37.60%</td>
-            <td>42.00%</td>
-            <td>46.00%</td>
-          </tr>
-          <tr>
-            <td><strong>Composite Rule Baseline (ML-07)</strong></td>
-            <td class="mono">0.6349</td>
-            <td class="mono">N/A*</td>
-            <td>70.00%</td>
-            <td>66.00%</td>
-            <td>62.00%</td>
-            <td>65.60%</td>
-            <td>71.20%</td>
-            <td>71.70%</td>
-          </tr>
-          <tr>
-            <td><strong>Logistic Regression (L2, fold-scaled)</strong></td>
-            <td class="mono">0.6417</td>
-            <td class="mono">0.2344</td>
-            <td>65.00%</td>
-            <td>76.00%</td>
-            <td>78.00%</td>
-            <td>76.40%</td>
-            <td>72.40%</td>
-            <td>72.10%</td>
-          </tr>
-          <tr>
-            <td><strong>Random Forest (Micro-Sprint Champion)</strong></td>
-            <td class="mono">0.6835</td>
-            <td class="mono">0.2199</td>
-            <td class="metric-highlight">100.00%</td>
-            <td class="metric-highlight">88.00%</td>
-            <td class="metric-highlight">87.00%</td>
-            <td class="metric-highlight">83.20%</td>
-            <td class="metric-highlight">81.80%</td>
-            <td class="metric-highlight">77.80%</td>
-          </tr>
-          <tr>
-            <td><strong>LightGBM (Deep Queue Champion)</strong></td>
-            <td class="metric-highlight">0.6872</td>
-            <td class="metric-highlight">0.2194</td>
-            <td>85.00%</td>
-            <td>86.00%</td>
-            <td>84.00%</td>
-            <td>80.80%</td>
-            <td>81.60%</td>
-            <td>75.90%</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p style="font-size: 0.8rem; color: var(--text-muted);"><em>*Heuristic baselines produce uncalibrated arbitrary point scores; Brier scores are marked N/A.</em></p>
+        <!-- Figure 1 -->
+        <figure class="figure-card">
+          <div class="figure-header">
+            <span class="figure-label">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                <circle cx="9" cy="9" r="2" />
+                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+              </svg>
+              <span>Figure 1: Empirical Decay Rates by SERP Tier and Content Age</span>
+            </span>
+            <span class="table-count-badge">Click image to enlarge</span>
+          </div>
+          <div class="figure-img-wrap"
+            onclick="openLightbox('img/signal_audit_verdicts.png', 'Figure 1: Empirical decay rates by SERP position tier and content age tier')">
+            <img src="img/signal_audit_verdicts.png" alt="Signal Audit Empirical Verdicts" loading="lazy">
+          </div>
+          <figcaption class="figure-caption">
+            <em>Figure 1: Empirical decay rates by SERP position tier (showing striking distance risk peak) and content
+              age tier (showing elevated post-launch vulnerability).</em>
+          </figcaption>
+        </figure>
+      </section>
 
-    <div class="callout-box">
-      <h4>The Dual-Model Operational Hierarchy</h4>
-      <p style="margin-bottom: 0; color: var(--text-primary);">
-        <strong>1. Micro-Sprint Champion (Random Forest):</strong> For weekly review queues of 20 to 50 URLs, Random Forest achieves <strong>100.00% Precision@20</strong> and <strong>88.00% Precision@50</strong> (+22.00% absolute lift over rule baseline), strictly dominating all other models.<br><br>
-        <strong>2. Deep Queue Champion (LightGBM):</strong> For enterprise monthly audits of 500+ URLs, LightGBM achieves the highest overall discrimination (<strong>0.6872 ROC-AUC</strong>) and probability calibration (<strong>0.2194 Brier Score</strong>), sustaining <strong>81.60% precision</strong> and averting an estimated 52 false-positive rewrites relative to the rule baseline.
-      </p>
-    </div>
+      <!-- Section 5: Model Evaluation -->
+      <section class="paper-section" id="model-evaluation">
+        <h2 class="section-heading">
+          <span class="section-num">5</span>
+          <span>Model Evaluation &amp; The Dual-Model Framework</span>
+        </h2>
+        <p>
+          We benchmarked three machine learning architectures against our transparent heuristic baseline, a simple
+          1-feature volume sort, and the natural base rate. All metrics represent strictly out-of-fold predictions
+          gathered across all 32 client folds under client-grouped CV:
+        </p>
 
-    <div style="margin: 2rem 0; text-align: center;">
-      <img src="img/precision_at_k.png" alt="Precision at K Benchmark Comparison" style="max-width: 100%; height: auto; border-radius: 0.75rem; border: 1px solid var(--border-subtle); box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;"><em>Figure 2: Out-of-Domain Precision@K across operational review queue cutoffs comparing Random Guessing, Rule Baseline, Random Forest, and LightGBM.</em></p>
-    </div>
-  </section>
+        <div class="table-container">
+          <div class="table-toolbar">
+            <div class="table-title-wrap">
+              <span class="table-caption-text">Benchmark Scorecard: Client-Grouped CV (GroupKFold)</span>
+              <span class="table-count-badge">6 Architecture Benchmarks</span>
+            </div>
+          </div>
 
-  <!-- Section 6: The Memorization Gap -->
-  <section id="memorization-gap">
-    <h2>6. The Memorization Gap: Why Grouped Validation Matters</h2>
-    <p>
-      In commercial data science, analysts frequently report standard random <em>k</em>-fold cross-validation results without accounting for site-level grouping. We explicitly audited the performance penalty between naive random splitting and client-grouped splitting:
-    </p>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Method / Model Architecture</th>
+                  <th>ROC-AUC</th>
+                  <th>Brier Score</th>
+                  <th>P@20</th>
+                  <th>P@50</th>
+                  <th>P@100</th>
+                  <th>P@250</th>
+                  <th>P@500</th>
+                  <th>P@1000</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Natural Base Rate (Random Guess)</strong></td>
+                  <td class="mono">0.5000</td>
+                  <td class="mono">0.2482</td>
+                  <td>54.21%</td>
+                  <td>54.21%</td>
+                  <td>54.21%</td>
+                  <td>54.21%</td>
+                  <td>54.21%</td>
+                  <td>54.21%</td>
+                </tr>
+                <tr>
+                  <td><strong>Simple Heuristic (Raw Impression Sort)</strong></td>
+                  <td class="mono">0.5845</td>
+                  <td class="mono">N/A*</td>
+                  <td>45.00%</td>
+                  <td>42.00%</td>
+                  <td>38.00%</td>
+                  <td>37.60%</td>
+                  <td>42.00%</td>
+                  <td>46.00%</td>
+                </tr>
+                <tr>
+                  <td><strong>Composite Rule Baseline (ML-07)</strong></td>
+                  <td class="mono">0.6349</td>
+                  <td class="mono">N/A*</td>
+                  <td>70.00%</td>
+                  <td>66.00%</td>
+                  <td>62.00%</td>
+                  <td>65.60%</td>
+                  <td>71.20%</td>
+                  <td>71.70%</td>
+                </tr>
+                <tr>
+                  <td><strong>Logistic Regression (L2, fold-scaled)</strong></td>
+                  <td class="mono">0.6417</td>
+                  <td class="mono">0.2344</td>
+                  <td>65.00%</td>
+                  <td>76.00%</td>
+                  <td>78.00%</td>
+                  <td>76.40%</td>
+                  <td>72.40%</td>
+                  <td>72.10%</td>
+                </tr>
+                <tr style="background: rgba(16, 185, 129, 0.05);">
+                  <td><strong>Random Forest (Micro-Sprint Champion)</strong></td>
+                  <td class="mono">0.6835</td>
+                  <td class="mono">0.2199</td>
+                  <td class="metric-highlight">100.00%</td>
+                  <td class="metric-highlight">88.00%</td>
+                  <td class="metric-highlight">87.00%</td>
+                  <td class="metric-highlight">83.20%</td>
+                  <td class="metric-highlight">81.80%</td>
+                  <td class="metric-highlight">77.80%</td>
+                </tr>
+                <tr style="background: rgba(14, 165, 233, 0.05);">
+                  <td><strong>LightGBM (Deep Queue Champion)</strong></td>
+                  <td class="metric-highlight">0.6872</td>
+                  <td class="metric-highlight">0.2194</td>
+                  <td>85.00%</td>
+                  <td>86.00%</td>
+                  <td>84.00%</td>
+                  <td>80.80%</td>
+                  <td>81.60%</td>
+                  <td>75.90%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer-note">
+            <em>*Heuristic baselines produce uncalibrated arbitrary point scores; Brier scores are marked N/A.</em>
+          </div>
+        </div>
 
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Validation Splitting Strategy</th>
-            <th>ROC-AUC</th>
-            <th>Brier Score</th>
-            <th>Precision@50</th>
-            <th>Precision@250</th>
-            <th>Precision@500</th>
-            <th>Precision@1000</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Naive Random Split (K-Fold)</strong></td>
-            <td class="metric-warn">0.7704</td>
-            <td class="mono">0.1932</td>
-            <td>96.00%</td>
-            <td>93.20%</td>
-            <td>92.80%</td>
-            <td>92.50%</td>
-          </tr>
-          <tr>
-            <td><strong>Honest Client-Grouped (GroupKFold)</strong></td>
-            <td class="metric-highlight">0.6872</td>
-            <td class="mono">0.2194</td>
-            <td>86.00%</td>
-            <td>80.80%</td>
-            <td>81.60%</td>
-            <td>75.90%</td>
-          </tr>
-          <tr style="background: rgba(251, 113, 133, 0.05);">
-            <td><strong>The Memorization Gap (Inflation)</strong></td>
-            <td class="metric-warn">+0.0832</td>
-            <td class="mono">-0.0262</td>
-            <td class="metric-warn">+10.00%</td>
-            <td class="metric-warn">+12.40%</td>
-            <td class="metric-warn">+11.20%</td>
-            <td class="metric-warn">+16.60%</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p>
-      Random splitting allows the model to memorize client-specific publishing templates and domain authority tiers. Grouped splitting isolates clients, establishing the true lower bound of out-of-domain generalization across unseen publisher sites.
-    </p>
+        <div class="callout-box">
+          <div class="callout-header">
+            <span class="callout-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            </span>
+            <span class="callout-title">The Dual-Model Operational Hierarchy</span>
+          </div>
+          <p style="margin-bottom: 0.75rem; color: var(--text-primary);">
+            <strong>1. Micro-Sprint Champion (Random Forest):</strong> For weekly review queues of 20 to 50 URLs, Random
+            Forest achieves <strong>100.00% Precision@20</strong> and <strong>88.00% Precision@50</strong> (+22.00%
+            absolute lift over rule baseline), strictly dominating all other models.
+          </p>
+          <p style="margin-bottom: 0; color: var(--text-primary);">
+            <strong>2. Deep Queue Champion (LightGBM):</strong> For enterprise monthly audits of 500+ URLs, LightGBM
+            achieves the highest overall discrimination (<strong>0.6872 ROC-AUC</strong>) and probability calibration
+            (<strong>0.2194 Brier Score</strong>), sustaining <strong>81.60% precision</strong> and averting an
+            estimated 52 false-positive rewrites relative to the rule baseline.
+          </p>
+        </div>
 
-    <div style="margin: 2rem 0; text-align: center;">
-      <img src="img/memorization_gap.png" alt="The Memorization Gap" style="max-width: 100%; height: auto; border-radius: 0.75rem; border: 1px solid var(--border-subtle); box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;"><em>Figure 3: Quantifying the memorization gap between naive random splitting and honest client-grouped splitting across key performance metrics.</em></p>
-    </div>
-  </section>
+        <!-- Figure 2 -->
+        <figure class="figure-card">
+          <div class="figure-header">
+            <span class="figure-label">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 3v18h18" />
+                <path d="m19 9-5 5-4-4-3 3" />
+              </svg>
+              <span>Figure 2: Precision@K Benchmark Across Operational Queue Cutoffs</span>
+            </span>
+            <span class="table-count-badge">Click image to enlarge</span>
+          </div>
+          <div class="figure-img-wrap"
+            onclick="openLightbox('img/precision_at_k.png', 'Figure 2: Precision at K Benchmark Comparison across Operational Queue Cutoffs')">
+            <img src="img/precision_at_k.png" alt="Precision at K Benchmark Comparison" loading="lazy">
+          </div>
+          <figcaption class="figure-caption">
+            <em>Figure 2: Out-of-Domain Precision@K across operational review queue cutoffs comparing Random Guessing,
+              Rule Baseline, Random Forest, and LightGBM.</em>
+          </figcaption>
+        </figure>
+      </section>
 
-  <!-- Section 7: Limitations & Honest Framing (Canonical Order) -->
-  <section id="limitations">
-    <h2>7. Limitations &amp; Scope Disclosures</h2>
-    <ul style="color: var(--text-secondary); margin-left: 1.5rem; margin-bottom: 1.25rem;">
-      <li><strong>Decision Support, Not Causal Recovery:</strong> This analysis is observational and cross-sectional. We claim decision-support priority ranking, not causal rank recovery. We do not claim that refreshing a page <em>causes</em> search engine algorithms to restore rankings.</li>
-      <li><strong>Concurrent Diagnostic Window (Nowcasting):</strong> Feature totals (<code>impressions_90d</code>) and trend labels (<code>impressions_last_30d</code>) share an overlapping trailing observation window. The model prioritizes existing decay; it is not a forward-horizon time-series forecaster.</li>
-      <li><strong>Survivorship Boundary:</strong> Findings are bounded to indexed URLs (<code>impressions_90d &ge; 1</code>) that have matured beyond 90 days. Performance on un-indexed pages or brand-new content cannot be inferred.</li>
-      <li><strong>Portfolio Concentration:</strong> Without explicit client quotas, top queues concentrate heavily in large publisher domains. Real-world workflows require diversification constraints.</li>
-    </ul>
-  </section>
+      <!-- Section 6: The Memorization Gap -->
+      <section class="paper-section" id="memorization-gap">
+        <h2 class="section-heading">
+          <span class="section-num">6</span>
+          <span>The Memorization Gap: Why Grouped Validation Matters</span>
+        </h2>
+        <p>
+          In commercial data science, analysts frequently report standard random <em>k</em>-fold cross-validation
+          results without accounting for site-level grouping. We explicitly audited the performance penalty between
+          naive random splitting and client-grouped splitting:
+        </p>
 
-  <!-- Section 8: Editorial Playbook -->
-  <section id="editorial-playbook">
-    <h2>8. Operational Editorial Decision Playbook</h2>
-    <p>
-      To operationalize machine learning models into weekly content workflows without falling into client concentration traps, we combine predicted probabilities with exposure thresholds and an explicit <strong>Client Diversification Quota (Max 5 URLs per client per sprint)</strong>:
-    </p>
+        <div class="table-container">
+          <div class="table-toolbar">
+            <div class="table-title-wrap">
+              <span class="table-caption-text">Cross-Validation Inflation Audit</span>
+              <span class="table-count-badge">Naive vs. GroupKFold</span>
+            </div>
+          </div>
 
-    <div class="playbook-tier">
-      <div class="tier-header">
-        <div class="tier-title">TIER 1A: High-Volume Deep Overhaul</div>
-        <div class="tier-precision">Observed Precision: 77.05% (n=61 in Top 100)</div>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Validation Splitting Strategy</th>
+                  <th>ROC-AUC</th>
+                  <th>Brier Score</th>
+                  <th>Precision@50</th>
+                  <th>Precision@250</th>
+                  <th>Precision@500</th>
+                  <th>Precision@1000</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Naive Random Split (K-Fold)</strong></td>
+                  <td class="metric-warn">0.7704</td>
+                  <td class="mono">0.1932</td>
+                  <td>96.00%</td>
+                  <td>93.20%</td>
+                  <td>92.80%</td>
+                  <td>92.50%</td>
+                </tr>
+                <tr>
+                  <td><strong>Honest Client-Grouped (GroupKFold)</strong></td>
+                  <td class="metric-highlight">0.6872</td>
+                  <td class="mono">0.2194</td>
+                  <td>86.00%</td>
+                  <td>80.80%</td>
+                  <td>81.60%</td>
+                  <td>75.90%</td>
+                </tr>
+                <tr style="background: rgba(244, 63, 94, 0.08);">
+                  <td><strong>The Memorization Gap (Inflation)</strong></td>
+                  <td class="metric-warn">+0.0832</td>
+                  <td class="mono">-0.0262</td>
+                  <td class="metric-warn">+10.00%</td>
+                  <td class="metric-warn">+12.40%</td>
+                  <td class="metric-warn">+11.20%</td>
+                  <td class="metric-warn">+16.60%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <p>
+          Random splitting allows the model to memorize client-specific publishing templates and domain authority tiers.
+          Grouped splitting isolates clients, establishing the true lower bound of out-of-domain generalization across
+          unseen publisher sites.
+        </p>
+
+        <!-- Figure 3 -->
+        <figure class="figure-card">
+          <div class="figure-header">
+            <span class="figure-label">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20v-6M6 20V10M18 20V4" />
+              </svg>
+              <span>Figure 3: Quantifying the Memorization Gap (Random vs. Grouped CV)</span>
+            </span>
+            <span class="table-count-badge">Click image to enlarge</span>
+          </div>
+          <div class="figure-img-wrap"
+            onclick="openLightbox('img/memorization_gap.png', 'Figure 3: Quantifying the memorization gap between naive random splitting and honest client-grouped splitting')">
+            <img src="img/memorization_gap.png" alt="The Memorization Gap" loading="lazy">
+          </div>
+          <figcaption class="figure-caption">
+            <em>Figure 3: Quantifying the memorization gap between naive random splitting and honest client-grouped
+              splitting across key performance metrics.</em>
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- Section 7: Limitations & Scope Disclosures -->
+      <section class="paper-section" id="limitations">
+        <h2 class="section-heading">
+          <span class="section-num">7</span>
+          <span>Limitations &amp; Scope Disclosures</span>
+        </h2>
+        <ul class="content-list">
+          <li><strong>Decision Support, Not Causal Recovery:</strong> This analysis is observational and
+            cross-sectional. We claim decision-support priority ranking, not causal rank recovery. We do not claim that
+            refreshing a page <em>causes</em> search engine algorithms to restore rankings.</li>
+          <li><strong>Concurrent Diagnostic Window (Nowcasting):</strong> Feature totals (<code>impressions_90d</code>)
+            and trend labels (<code>impressions_last_30d</code>) share an overlapping trailing observation window. The
+            model prioritizes existing decay; it is not a forward-horizon time-series forecaster.</li>
+          <li><strong>Survivorship Boundary:</strong> Findings are bounded to indexed URLs
+            (<code>impressions_90d &ge; 1</code>) that have matured beyond 90 days. Performance on un-indexed pages or
+            brand-new content cannot be inferred.</li>
+          <li><strong>Portfolio Concentration:</strong> Without explicit client quotas, top queues concentrate heavily
+            in large publisher domains. Real-world workflows require diversification constraints.</li>
+        </ul>
+      </section>
+
+      <!-- Section 8: Operational Editorial Decision Playbook -->
+      <section class="paper-section" id="editorial-playbook">
+        <h2 class="section-heading">
+          <span class="section-num">8</span>
+          <span>Operational Editorial Decision Playbook</span>
+        </h2>
+        <p>
+          To operationalize machine learning models into weekly content workflows without falling into client
+          concentration traps, we combine predicted probabilities with exposure thresholds and an explicit
+          <strong>Client Diversification Quota (Max 5 URLs per client per sprint)</strong>:
+        </p>
+
+        <!-- Playbook Tiers -->
+        <div class="playbook-tiers-grid">
+          <div class="playbook-tier">
+            <div class="tier-header">
+              <div class="tier-title-wrap">
+                <span class="tier-badge tier-badge-1a">Tier 1A</span>
+                <span class="tier-name">High-Volume Deep Overhaul</span>
+              </div>
+              <div class="tier-precision">Observed Precision: 77.05% (n=61 in Top 100)</div>
+            </div>
+            <div class="tier-condition"><strong>Condition:</strong> Predicted Probability &ge; 0.85 and Trailing
+              Impressions &ge; 500</div>
+            <div class="tier-action-desc"><strong>Action:</strong> Comprehensive overhaul: rewrite introductory hook,
+              update outdated statistics, refresh schema markup, re-target secondary keywords.</div>
+          </div>
+
+          <div class="playbook-tier">
+            <div class="tier-header">
+              <div class="tier-title-wrap">
+                <span class="tier-badge tier-badge-1b">Tier 1B</span>
+                <span class="tier-name">Quick-Win Priority Refresh</span>
+              </div>
+              <div class="tier-precision">Observed Precision: 94.44% (n=36 in Top 100)</div>
+            </div>
+            <div class="tier-condition"><strong>Condition:</strong> Predicted Probability &ge; 0.85 and Trailing
+              Impressions 100–499</div>
+            <div class="tier-action-desc"><strong>Action:</strong> Targeted section update, hook revision, internal link
+              reinforcement. Ensures high-confidence decaying core pages are not neglected.</div>
+          </div>
+
+          <div class="playbook-tier">
+            <div class="tier-header">
+              <div class="tier-title-wrap">
+                <span class="tier-badge tier-badge-2">Tier 2</span>
+                <span class="tier-name">Striking Distance SERP Defense</span>
+              </div>
+              <div class="tier-precision">Observed Precision: 100.00% (n=3 in Top 100)</div>
+            </div>
+            <div class="tier-condition"><strong>Condition:</strong> Predicted Probability &ge; 0.75 and Position Tier ==
+              Striking (Pos 11–20)</div>
+            <div class="tier-action-desc"><strong>Action:</strong> SERP snippet CTR optimization: rewrite Title tag for
+              higher click appeal, craft compelling meta description, inject 2–3 contextual internal links from Page 1
+              authority pillars.</div>
+          </div>
+
+          <div class="playbook-tier">
+            <div class="tier-header">
+              <div class="tier-title-wrap">
+                <span class="tier-badge tier-badge-3">Tier 3</span>
+                <span class="tier-name">Low-Impact Monthly Monitoring</span>
+              </div>
+              <div class="tier-precision"
+                style="color: var(--text-muted); background: var(--bg-subtle); border-color: var(--border-default);">
+                Queue Precision at K=500: 81.60%</div>
+            </div>
+            <div class="tier-condition"><strong>Condition:</strong> Predicted Probability &ge; 0.65</div>
+            <div class="tier-action-desc"><strong>Action:</strong> Automated monitoring queue: re-evaluate in subsequent
+              monthly sprint; avoid immediate billable hours intervention.</div>
+          </div>
+        </div>
+
+        <!-- Interactive Sprint Capacity ROI Estimator -->
+        <div class="calculator-card" role="region" aria-label="Sprint Capacity ROI Estimator">
+          <div class="calculator-header">
+            <div class="calculator-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect width="16" height="20" x="4" y="2" rx="2" />
+                <line x1="8" x2="16" y1="6" y2="6" />
+                <line x1="16" x2="16" y1="14" y2="18" />
+                <path d="M16 10h.01" />
+                <path d="M12 10h.01" />
+                <path d="M8 10h.01" />
+                <path d="M12 14h.01" />
+                <path d="M8 14h.01" />
+                <path d="M12 18h.01" />
+                <path d="M8 18h.01" />
+              </svg>
+              <span>Interactive Sprint ROI Estimator</span>
+            </div>
+            <div class="calculator-sub">Simulate operational yields across your editorial refresh capacity.</div>
+          </div>
+
+          <div class="calc-controls">
+            <div class="calc-slider-wrap">
+              <div class="calc-slider-label">
+                <span>Weekly Refresh Sprint Capacity (K URLs):</span>
+                <span class="calc-slider-val" id="sprintCapVal">50 URLs</span>
+              </div>
+              <input type="range" class="calc-range-input" id="sprintCapSlider" oninput="updateEstimator(this.value)"
+                min="10" max="500" step="10" value="50" aria-label="Select sprint capacity">
+            </div>
+          </div>
+
+          <div class="calc-results-grid">
+            <div class="calc-result-box">
+              <div class="calc-result-label">Expected Precision</div>
+              <div class="calc-result-val val-emerald" id="calcPrecision">88.0%</div>
+              <div class="calc-result-sub" id="calcPrecisionSub">44 of 50 confirmed decaying</div>
+            </div>
+
+            <div class="calc-result-box">
+              <div class="calc-result-label">Wasted Hours Prevented</div>
+              <div class="calc-result-val val-blue" id="calcHoursSaved">~44 hrs</div>
+              <div class="calc-result-sub" id="calcHoursSub">vs. Rule Heuristic (~4 hrs/URL)</div>
+            </div>
+
+            <div class="calc-result-box">
+              <div class="calc-result-label">Recommended Model</div>
+              <div class="calc-result-val" style="font-size: 1.15rem; color: var(--text-primary);" id="calcModel">Random
+                Forest</div>
+              <div class="calc-result-sub" id="calcModelSub">Micro-Sprint Champion</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="sub-heading">8.1 Live Action Playbook Sample (Top Prioritized URLs)</h3>
+        <p>
+          The table below displays an excerpt from the exported review queue
+          (<code>outputs/editorial_action_playbook_top100.csv</code>), ranked by model priority score:
+        </p>
+
+        <!-- Interactive Playbook Table -->
+        <div class="table-container">
+          <div class="table-toolbar">
+            <div class="table-title-wrap">
+              <span class="table-caption-text">Prioritized Review Queue Excerpt</span>
+              <span class="table-count-badge" id="playbookCountBadge">Showing 15 URLs</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+              <select id="playbookTierSelect" class="table-filter-input" onchange="filterPlaybookTable()"
+                oninput="filterPlaybookTable()" style="min-width: 140px;" aria-label="Filter by Playbook Tier">
+                <option value="all">All Action Tiers</option>
+                <option value="Tier_1A">Tier 1A Deep Overhaul</option>
+                <option value="Tier_1B">Tier 1B Quick Win</option>
+              </select>
+              <input type="text" class="table-filter-input" id="playbookSearchInput" oninput="filterPlaybookTable()"
+                onkeyup="filterPlaybookTable()" placeholder="Search Content or Client ID..."
+                aria-label="Search prioritized queue">
+              <button type="button" class="btn btn-secondary btn-sm" id="exportPlaybookBtn"
+                onclick="exportPlaybookCSV()" title="Download Playbook CSV">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" x2="12" y1="15" y2="3" />
+                </svg>
+                <span>Export CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <table class="data-table" id="playbookTable">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Content ID</th>
+                  <th>Client ID</th>
+                  <th>Decay Prob</th>
+                  <th>90d Impressions</th>
+                  <th>Avg Pos</th>
+                  <th>Position Tier</th>
+                  <th>Recommended Action</th>
+                </tr>
+              </thead>
+              <tbody id="playbookTableBody">
+                <tr data-tier="Tier_1B">
+                  <td><strong>#1</strong></td>
+                  <td class="mono">content_ae56011a24de</td>
+                  <td class="mono">client_624b60c58c</td>
+                  <td class="metric-highlight">0.9231</td>
+                  <td>302</td>
+                  <td>4.2</td>
+                  <td>Page 1</td>
+                  <td><span class="verdict-tag verdict-tier-1b">Tier 1B Quick Win</span></td>
+                </tr>
+                <tr data-tier="Tier_1B">
+                  <td><strong>#2</strong></td>
+                  <td class="mono">content_9d35d489e74d</td>
+                  <td class="mono">client_624b60c58c</td>
+                  <td class="metric-highlight">0.9230</td>
+                  <td>169</td>
+                  <td>6.7</td>
+                  <td>Page 1</td>
+                  <td><span class="verdict-tag verdict-tier-1b">Tier 1B Quick Win</span></td>
+                </tr>
+                <tr data-tier="Tier_1B">
+                  <td><strong>#3</strong></td>
+                  <td class="mono">content_20c5d6a1c7b1</td>
+                  <td class="mono">client_624b60c58c</td>
+                  <td class="metric-highlight">0.9199</td>
+                  <td>201</td>
+                  <td>6.2</td>
+                  <td>Page 1</td>
+                  <td><span class="verdict-tag verdict-tier-1b">Tier 1B Quick Win</span></td>
+                </tr>
+                <tr data-tier="Tier_1B">
+                  <td><strong>#4</strong></td>
+                  <td class="mono">content_70b10b7227ac</td>
+                  <td class="mono">client_624b60c58c</td>
+                  <td class="metric-highlight">0.9140</td>
+                  <td>356</td>
+                  <td>7.5</td>
+                  <td>Page 1</td>
+                  <td><span class="verdict-tag verdict-tier-1b">Tier 1B Quick Win</span></td>
+                </tr>
+                <tr data-tier="Tier_1B">
+                  <td><strong>#5</strong></td>
+                  <td class="mono">content_1023abe9e4dd</td>
+                  <td class="mono">client_624b60c58c</td>
+                  <td class="metric-highlight">0.9132</td>
+                  <td>137</td>
+                  <td>4.6</td>
+                  <td>Page 1</td>
+                  <td><span class="verdict-tag verdict-tier-1b">Tier 1B Quick Win</span></td>
+                </tr>
+                <tr data-tier="Tier_1A">
+                  <td><strong>#6</strong></td>
+                  <td class="mono">content_d8020ed269ef</td>
+                  <td class="mono">client_6208ef0f77</td>
+                  <td class="metric-highlight">0.9123</td>
+                  <td>1,216</td>
+                  <td>1.2</td>
+                  <td>Top 3</td>
+                  <td><span class="verdict-tag verdict-tier-1a">Tier 1A Deep Refresh</span></td>
+                </tr>
+                <tr data-tier="Tier_1B">
+                  <td><strong>#7</strong></td>
+                  <td class="mono">content_6e1add102562</td>
+                  <td class="mono">client_624b60c58c</td>
+                  <td class="metric-highlight">0.9105</td>
+                  <td>133</td>
+                  <td>6.1</td>
+                  <td>Page 1</td>
+                  <td><span class="verdict-tag verdict-tier-1b">Tier 1B Quick Win</span></td>
+                </tr>
+                <tr data-tier="Tier_1A">
+                  <td><strong>#8</strong></td>
+                  <td class="mono">content_4bb993e9270e</td>
+                  <td class="mono">client_6208ef0f77</td>
+                  <td class="metric-highlight">0.9089</td>
+                  <td>1,986</td>
+                  <td>1.3</td>
+                  <td>Top 3</td>
+                  <td><span class="verdict-tag verdict-tier-1a">Tier 1A Deep Refresh</span></td>
+                </tr>
+                <tr data-tier="Tier_1A">
+                  <td><strong>#9</strong></td>
+                  <td class="mono">content_d0fd2e1ec8f6</td>
+                  <td class="mono">client_6208ef0f77</td>
+                  <td class="metric-highlight">0.9068</td>
+                  <td>519</td>
+                  <td>2.5</td>
+                  <td>Top 3</td>
+                  <td><span class="verdict-tag verdict-tier-1a">Tier 1A Deep Refresh</span></td>
+                </tr>
+                <tr data-tier="Tier_1A">
+                  <td><strong>#10</strong></td>
+                  <td class="mono">content_de147de3f5fe</td>
+                  <td class="mono">client_624b60c58c</td>
+                  <td class="metric-highlight">0.9044</td>
+                  <td>1,747</td>
+                  <td>11.5</td>
+                  <td>Striking</td>
+                  <td><span class="verdict-tag verdict-tier-1a">Tier 1A Deep Refresh</span></td>
+                </tr>
+                <tr data-tier="Tier_1A">
+                  <td><strong>#11</strong></td>
+                  <td class="mono">content_a27eb2ede5e6</td>
+                  <td class="mono">client_6208ef0f77</td>
+                  <td class="metric-highlight">0.9042</td>
+                  <td>2,482</td>
+                  <td>2.0</td>
+                  <td>Top 3</td>
+                  <td><span class="verdict-tag verdict-tier-1a">Tier 1A Deep Refresh</span></td>
+                </tr>
+                <tr data-tier="Tier_1A">
+                  <td><strong>#12</strong></td>
+                  <td class="mono">content_186489efe6f4</td>
+                  <td class="mono">client_6208ef0f77</td>
+                  <td class="metric-highlight">0.9019</td>
+                  <td>4,792</td>
+                  <td>2.3</td>
+                  <td>Top 3</td>
+                  <td><span class="verdict-tag verdict-tier-1a">Tier 1A Deep Refresh</span></td>
+                </tr>
+                <tr data-tier="Tier_1A">
+                  <td><strong>#13</strong></td>
+                  <td class="mono">content_6752b50ee577</td>
+                  <td class="mono">client_bbb965ab0c</td>
+                  <td class="metric-highlight">0.8990</td>
+                  <td>2,142</td>
+                  <td>2.9</td>
+                  <td>Top 3</td>
+                  <td><span class="verdict-tag verdict-tier-1a">Tier 1A Deep Refresh</span></td>
+                </tr>
+                <tr data-tier="Tier_1B">
+                  <td><strong>#14</strong></td>
+                  <td class="mono">content_9d0300db3dbb</td>
+                  <td class="mono">client_624b60c58c</td>
+                  <td class="metric-highlight">0.8982</td>
+                  <td>361</td>
+                  <td>7.1</td>
+                  <td>Page 1</td>
+                  <td><span class="verdict-tag verdict-tier-1b">Tier 1B Quick Win</span></td>
+                </tr>
+                <tr data-tier="Tier_1A">
+                  <td><strong>#15</strong></td>
+                  <td class="mono">content_ba8edc136162</td>
+                  <td class="mono">client_4e07408562</td>
+                  <td class="metric-highlight">0.8950</td>
+                  <td>13,082</td>
+                  <td>16.2</td>
+                  <td>Striking</td>
+                  <td><span class="verdict-tag verdict-tier-1a">Tier 1A Deep Refresh</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-empty-state" id="playbookEmptyState">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <p>No matching prioritized URLs found in current filter.</p>
+            <button type="button" class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;"
+              onclick="resetPlaybookFilters()">Reset Filters</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 9: Reproducibility & Code Lineage -->
+      <section class="paper-section" id="reproducibility">
+        <h2 class="section-heading">
+          <span class="section-num">9</span>
+          <span>Reproducibility &amp; Data Credit</span>
+        </h2>
+        <p>
+          This research is 100% reproducible using Python 3.14.6, <code>scikit-learn==1.9.1</code>, and
+          <code>lightgbm==4.7.0</code> with random seeds fixed globally at <code>random_state=42</code>.
+        </p>
+
+        <!-- Master Capstone Box -->
+        <div class="master-capstone-box">
+          <div class="master-capstone-info">
+            <div class="master-capstone-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+              <span>Unified Master Capstone Walkthrough</span>
+            </div>
+            <div class="master-capstone-desc">
+              <code>notebooks/capstone_content_decay.ipynb</code>: <strong>Executive End-to-End Master Notebook</strong>
+              — presents the complete narrative arc (data contracts, audited signals, dual models, leakage tests,
+              playbooks, and publication charts) in a single run.
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button type="button" class="btn btn-secondary btn-sm"
+              onclick="navigator.clipboard.writeText('python scripts/run_all.py'); showToast('Command copied');">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+              </svg>
+              <span>Copy run_all.py</span>
+            </button>
+          </div>
+        </div>
+
+        <p style="margin-bottom: 0.75rem;">
+          <strong>Modular Milestone Notebooks:</strong>
+        </p>
+
+        <div class="repro-card-grid">
+          <div class="repro-card">
+            <div class="repro-card-header">
+              <span class="repro-step-badge">ML-02</span>
+              <span class="repro-card-title">Problem Framing &amp; Base Rate</span>
+            </div>
+            <div class="repro-card-desc">
+              <code>notebooks/01_research_question.ipynb</code>: Problem framing, grain check, base rate calculation.
+            </div>
+            <span class="repro-card-link"
+              onclick="navigator.clipboard.writeText('notebooks/01_research_question.ipynb'); showToast('Notebook path copied');">Copy
+              Path &rarr;</span>
+          </div>
+
+          <div class="repro-card">
+            <div class="repro-card-header">
+              <span class="repro-step-badge">ML-04</span>
+              <span class="repro-card-title">Data Contract &amp; Schema</span>
+            </div>
+            <div class="repro-card-desc">
+              <code>notebooks/02_data_contract.ipynb</code>: 44-column exhaustive partitioning, schema &amp; allowable
+              range assertions.
+            </div>
+            <span class="repro-card-link"
+              onclick="navigator.clipboard.writeText('notebooks/02_data_contract.ipynb'); showToast('Notebook path copied');">Copy
+              Path &rarr;</span>
+          </div>
+
+          <div class="repro-card">
+            <div class="repro-card-header">
+              <span class="repro-step-badge">ML-06</span>
+              <span class="repro-card-title">Signal Audit &amp; Decisions</span>
+            </div>
+            <div class="repro-card-desc">
+              <code>notebooks/03_signal_audit.ipynb</code>: Heavy-tail tests, Cohen's <em>h</em> effect sizes, Feature
+              Decision Register.
+            </div>
+            <span class="repro-card-link"
+              onclick="navigator.clipboard.writeText('notebooks/03_signal_audit.ipynb'); showToast('Notebook path copied');">Copy
+              Path &rarr;</span>
+          </div>
+
+          <div class="repro-card">
+            <div class="repro-card-header">
+              <span class="repro-step-badge">ML-07</span>
+              <span class="repro-card-title">Rule Baselines &amp; Heuristics</span>
+            </div>
+            <div class="repro-card-desc">
+              <code>notebooks/04_baseline_model.ipynb</code>: Simple impression sort &amp; composite heuristic rule
+              construction.
+            </div>
+            <span class="repro-card-link"
+              onclick="navigator.clipboard.writeText('notebooks/04_baseline_model.ipynb'); showToast('Notebook path copied');">Copy
+              Path &rarr;</span>
+          </div>
+
+          <div class="repro-card">
+            <div class="repro-card-header">
+              <span class="repro-step-badge">ML-08</span>
+              <span class="repro-card-title">Client-Grouped Training</span>
+            </div>
+            <div class="repro-card-desc">
+              <code>notebooks/05_model_training.ipynb</code>: Client-grouped 5-fold CV, Dual-Model benchmark scorecard.
+            </div>
+            <span class="repro-card-link"
+              onclick="navigator.clipboard.writeText('notebooks/05_model_training.ipynb'); showToast('Notebook path copied');">Copy
+              Path &rarr;</span>
+          </div>
+
+          <div class="repro-card">
+            <div class="repro-card-header">
+              <span class="repro-step-badge">ML-09</span>
+              <span class="repro-card-title">Leakage Hunting &amp; Gap Audit</span>
+            </div>
+            <div class="repro-card-desc">
+              <code>notebooks/06_leakage_and_validation.ipynb</code>: Controlled confession test, memorization gap
+              measurement.
+            </div>
+            <span class="repro-card-link"
+              onclick="navigator.clipboard.writeText('notebooks/06_leakage_and_validation.ipynb'); showToast('Notebook path copied');">Copy
+              Path &rarr;</span>
+          </div>
+        </div>
+
+        <p>
+          Data credit: <strong>FlyRank</strong> Pseudonymized Enterprise Content Benchmark
+          (<code>FlyRank/internship-warehouse</code> build <code>v20260703</code>).
+        </p>
+      </section>
+
+      <!-- Back to Top Button -->
+      <button type="button" class="back-to-top-btn" id="backToTopBtn" aria-label="Back to top" title="Scroll to top">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="18 15 12 9 6 15" />
+        </svg>
+      </button>
+
+    </main>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span>FlyRank AI Capstone Project</span>
+        </div>
+        <div class="footer-links">
+          <a href="#abstract">Abstract</a>
+          <a href="#data-contract">Data Contract</a>
+          <a href="#model-evaluation">Evaluation</a>
+          <a href="#editorial-playbook">Playbook</a>
+          <a href="#reproducibility">Reproducibility</a>
+        </div>
       </div>
-      <p style="font-size: 0.9rem; margin-bottom: 0.25rem;"><strong>Condition:</strong> Predicted Probability &ge; 0.85 and Trailing Impressions &ge; 500</p>
-      <p style="font-size: 0.9rem; margin-bottom: 0;"><strong>Action:</strong> Comprehensive overhaul: rewrite introductory hook, update outdated statistics, refresh schema markup, re-target secondary keywords.</p>
-    </div>
-
-    <div class="playbook-tier">
-      <div class="tier-header">
-        <div class="tier-title">TIER 1B: Quick-Win Priority Refresh</div>
-        <div class="tier-precision">Observed Precision: 94.44% (n=36 in Top 100)</div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Nashidul Sarker &bull; Published under Open Reproducibility Standards
+          with FlyRank Benchmark Data</p>
+        <p>Open Benchmark &bull; GroupKFold Validation</p>
       </div>
-      <p style="font-size: 0.9rem; margin-bottom: 0.25rem;"><strong>Condition:</strong> Predicted Probability &ge; 0.85 and Trailing Impressions 100–499</p>
-      <p style="font-size: 0.9rem; margin-bottom: 0;"><strong>Action:</strong> Targeted section update, hook revision, internal link reinforcement. Ensures high-confidence decaying core pages are not neglected.</p>
     </div>
-
-    <div class="playbook-tier">
-      <div class="tier-header">
-        <div class="tier-title">TIER 2: Striking Distance SERP Defense</div>
-        <div class="tier-precision">Observed Precision: 100.00% (n=3 in Top 100)</div>
-      </div>
-      <p style="font-size: 0.9rem; margin-bottom: 0.25rem;"><strong>Condition:</strong> Predicted Probability &ge; 0.75 and Position Tier == Striking (Pos 11–20)</p>
-      <p style="font-size: 0.9rem; margin-bottom: 0;"><strong>Action:</strong> SERP snippet CTR optimization: rewrite Title tag for higher click appeal, craft compelling meta description, inject 2–3 contextual internal links from Page 1 authority pillars.</p>
-    </div>
-
-    <div class="playbook-tier">
-      <div class="tier-header">
-        <div class="tier-title">TIER 3: Low-Impact Monthly Monitoring</div>
-        <div class="tier-precision">Queue Precision at K=500: 81.60%</div>
-      </div>
-      <p style="font-size: 0.9rem; margin-bottom: 0.25rem;"><strong>Condition:</strong> Predicted Probability &ge; 0.65</p>
-      <p style="font-size: 0.9rem; margin-bottom: 0;"><strong>Action:</strong> Automated monitoring queue: re-evaluate in subsequent monthly sprint; avoid immediate billable hours intervention.</p>
-    </div>
-
-    <h3>8.1 Live Action Playbook Sample (Top 5 Prioritized URLs)</h3>
-    <p>
-      The table below displays an excerpt from the exported review queue (<code>outputs/editorial_action_playbook_top100.csv</code>), ranked by model priority score:
-    </p>
-
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Content ID</th>
-            <th>Client ID</th>
-            <th>Decay Prob</th>
-            <th>90d Impressions</th>
-            <th>Avg Pos</th>
-            <th>Position Tier</th>
-            <th>Recommended Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>#1</strong></td>
-            <td class="mono">content_ae56011a24de</td>
-            <td class="mono">client_624b60c58c</td>
-            <td class="metric-highlight">0.9231</td>
-            <td>302</td>
-            <td>4.2</td>
-            <td>Page 1</td>
-            <td><span class="verdict-tag" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-blue);">Tier 1B Quick Win</span></td>
-          </tr>
-          <tr>
-            <td><strong>#2</strong></td>
-            <td class="mono">content_9d35d489e74d</td>
-            <td class="mono">client_624b60c58c</td>
-            <td class="metric-highlight">0.9230</td>
-            <td>169</td>
-            <td>6.7</td>
-            <td>Page 1</td>
-            <td><span class="verdict-tag" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-blue);">Tier 1B Quick Win</span></td>
-          </tr>
-          <tr>
-            <td><strong>#3</strong></td>
-            <td class="mono">content_20c5d6a1c7b1</td>
-            <td class="mono">client_624b60c58c</td>
-            <td class="metric-highlight">0.9199</td>
-            <td>201</td>
-            <td>6.2</td>
-            <td>Page 1</td>
-            <td><span class="verdict-tag" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-blue);">Tier 1B Quick Win</span></td>
-          </tr>
-          <tr>
-            <td><strong>#4</strong></td>
-            <td class="mono">content_70b10b7227ac</td>
-            <td class="mono">client_624b60c58c</td>
-            <td class="metric-highlight">0.9140</td>
-            <td>356</td>
-            <td>7.5</td>
-            <td>Page 1</td>
-            <td><span class="verdict-tag" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-blue);">Tier 1B Quick Win</span></td>
-          </tr>
-          <tr>
-            <td><strong>#5</strong></td>
-            <td class="mono">content_d8020ed269ef</td>
-            <td class="mono">client_6208ef0f77</td>
-            <td class="metric-highlight">0.9123</td>
-            <td>1,216</td>
-            <td>1.2</td>
-            <td>Top 3</td>
-            <td><span class="verdict-tag verdict-confirmed">Tier 1A Deep Refresh</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- Section 9: Reproducibility & Code Lineage -->
-  <section id="reproducibility">
-    <h2>9. Reproducibility &amp; Data Credit</h2>
-    <p>
-      This research is 100% reproducible using Python 3.14.6, <code>scikit-learn==1.9.1</code>, and <code>lightgbm==4.7.0</code> with random seeds fixed globally at <code>random_state=42</code>.
-    </p>
-    <p>
-      The complete pipeline can be executed via <code>python scripts/run_all.py</code> or through the committed notebooks:
-    </p>
-    <p style="margin-bottom: 0.75rem;">
-      <strong>Unified Master Capstone Walkthrough:</strong>
-    </p>
-    <ul style="color: var(--text-secondary); margin-left: 1.5rem; margin-bottom: 1.25rem;">
-      <li><code>notebooks/capstone_content_decay.ipynb</code>: <strong>Executive End-to-End Master Notebook</strong> — presents the complete narrative arc (data contracts, audited signals, dual models, leakage tests, playbooks, and publication charts) in a single run.</li>
-    </ul>
-    <p style="margin-bottom: 0.75rem;">
-      <strong>Modular Milestone Notebooks:</strong>
-    </p>
-    <ul style="color: var(--text-secondary); margin-left: 1.5rem; margin-bottom: 1.25rem;">
-      <li><code>notebooks/01_research_question.ipynb</code>: Problem framing, grain check, base rate calculation.</li>
-      <li><code>notebooks/02_data_contract.ipynb</code>: 44-column exhaustive partitioning, schema &amp; allowable range assertions.</li>
-      <li><code>notebooks/03_signal_audit.ipynb</code>: Heavy-tail tests, Cohen's <em>h</em> effect sizes, Feature Decision Register.</li>
-      <li><code>notebooks/04_baseline_model.ipynb</code>: Simple impression sort &amp; composite heuristic rule construction.</li>
-      <li><code>notebooks/05_model_training.ipynb</code>: Client-grouped 5-fold CV, Dual-Model benchmark scorecard.</li>
-      <li><code>notebooks/06_leakage_and_validation.ipynb</code>: Controlled confession test, memorization gap measurement.</li>
-      <li><code>notebooks/07_honest_claims.ipynb</code>: Banned words audit, diversified editorial playbook, dynamic figures.</li>
-    </ul>
-    <p>
-      Data credit: <strong>FlyRank</strong> Pseudonymized Enterprise Content Benchmark (<code>FlyRank/internship-warehouse</code> build <code>v20260703</code>).
-    </p>
-  </section>
-
-  <footer>
-    <p>&copy; 2026 Applied Search Intelligence Research Group &bull; Published under Open Reproducibility Standards with FlyRank Benchmark Data</p>
   </footer>
 
-</div>
+  <!-- Citation Modal -->
+  <div class="modal-overlay" id="citeModal" role="dialog" aria-modal="true" aria-labelledby="citeModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="citeModalTitle">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+            <path d="M6 6h10" />
+            <path d="M6 10h10" />
+          </svg>
+          <span>Cite This Research</span>
+        </h3>
+        <button type="button" class="modal-close-btn" id="closeCiteModalBtn" onclick="closeCiteModal()"
+          aria-label="Close modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" x2="6" y1="6" y2="18" />
+            <line x1="6" x2="18" y1="6" y2="18" />
+          </svg>
+        </button>
+      </div>
 
+      <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+        Use the following citations to reference this paper and benchmark in academic or commercial works:
+      </p>
+
+      <div class="code-block-card" style="margin: 0.75rem 0 1.25rem;">
+        <div class="code-header">
+          <span class="code-lang-tag">BibTeX</span>
+          <button type="button" class="btn btn-secondary btn-sm" id="copyBibtexBtn" onclick="copyBibtex()">Copy
+            BibTeX</button>
+        </div>
+        <pre class="code-content"><code id="bibtexText">@article{flyrank2026contentdecay,
+  title={Beyond Static Rules: Machine Learning for Content Decay Prioritization in Search Operations},
+  author={Nashidul Sarker},
+  journal={FlyRank Applied Search Intelligence Series},
+  year={2026},
+  month={September},
+  url={file:///c:/Users/1iCE/Desktop/internship project/docs/index.html}
+}</code></pre>
+      </div>
+
+      <div class="code-block-card" style="margin: 0.75rem 0 1.25rem;">
+        <div class="code-header">
+          <span class="code-lang-tag">APA 7th Edition</span>
+          <button type="button" class="btn btn-secondary btn-sm" id="copyApaBtn" onclick="copyApa()">Copy APA</button>
+        </div>
+        <pre
+          class="code-content"><code id="apaText">Nashidul Sarker. (2026). Beyond static rules: Machine learning for content decay prioritization in search operations. FlyRank Applied Search Intelligence Series.</code></pre>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+        <button type="button" class="btn btn-secondary" onclick="closeCiteModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Lightbox Modal -->
+  <div class="modal-overlay lightbox-modal" id="lightboxModal" role="dialog" aria-modal="true"
+    aria-label="Image Fullsize View">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h4 class="modal-title" id="lightboxTitle" style="font-size: 0.95rem;">Figure Zoom</h4>
+        <button type="button" class="modal-close-btn" onclick="closeLightbox()" aria-label="Close full size view">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" x2="6" y1="6" y2="18" />
+            <line x1="6" x2="18" y1="6" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="lightbox-img-wrap">
+        <img id="lightboxImg" src="" alt="Enlarged figure view">
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- ==========================================================================
+       JAVASCRIPT LOGIC & INTERACTIONS
+       ========================================================================== -->
+  <script>
+    // Theme Management
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('flyrank_theme', theme);
+      const sunIcon = document.querySelector('.theme-icon-sun');
+      const moonIcon = document.querySelector('.theme-icon-moon');
+      if (sunIcon && moonIcon) {
+        if (theme === 'dark') {
+          sunIcon.style.display = 'block';
+          moonIcon.style.display = 'none';
+        } else {
+          sunIcon.style.display = 'none';
+          moonIcon.style.display = 'block';
+        }
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    const savedTheme = localStorage.getItem('flyrank_theme') || 'dark';
+    applyTheme(savedTheme);
+
+    // Mobile Menu & Drawer Toggle
+    function toggleMobileMenu() {
+      const drawer = document.getElementById('mobileDrawer');
+      if (!drawer) return;
+      if (drawer.classList.contains('active')) {
+        closeMobileMenu();
+      } else {
+        openMobileMenu();
+      }
+    }
+
+    function openMobileMenu() {
+      const drawer = document.getElementById('mobileDrawer');
+      const overlay = document.getElementById('mobileDrawerOverlay');
+      const btn = document.getElementById('mobileMenuBtn');
+      if (drawer) {
+        drawer.classList.add('active');
+        drawer.setAttribute('aria-hidden', 'false');
+      }
+      if (overlay) {
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+      }
+      if (btn) btn.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileMenu() {
+      const drawer = document.getElementById('mobileDrawer');
+      const overlay = document.getElementById('mobileDrawerOverlay');
+      const btn = document.getElementById('mobileMenuBtn');
+      if (drawer) {
+        drawer.classList.remove('active');
+        drawer.setAttribute('aria-hidden', 'true');
+      }
+      if (overlay) {
+        overlay.classList.remove('active');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1040) {
+        closeMobileMenu();
+      }
+    }, { passive: true });
+
+    // Reading Progress & Back to Top
+    window.addEventListener('scroll', () => {
+      const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      const readingProgressBar = document.getElementById('readingProgressBar');
+      if (readingProgressBar) {
+        readingProgressBar.style.width = scrolled + '%';
+      }
+
+      const backToTopBtn = document.getElementById('backToTopBtn');
+      if (backToTopBtn) {
+        if (winScroll > 450) {
+          backToTopBtn.classList.add('visible');
+        } else {
+          backToTopBtn.classList.remove('visible');
+        }
+      }
+    }, { passive: true });
+
+    const backToTopBtn = document.getElementById('backToTopBtn');
+    if (backToTopBtn) {
+      backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    // ScrollSpy for Top Navbar Links
+    const sections = document.querySelectorAll('section.paper-section, article.abstract-card');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          navLinks.forEach(link => {
+            if (link.getAttribute('href') === '#' + id) {
+              link.classList.add('active');
+            } else {
+              link.classList.remove('active');
+            }
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(sec => observer.observe(sec));
+
+    // Toast Functionality
+    function showToast(message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--emerald-500)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>${message}</span>`;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => toast.classList.add('show'));
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 250);
+      }, 3000);
+    }
+
+    // Copy Abstract
+    const copyAbstractBtn = document.getElementById('copyAbstractBtn');
+    if (copyAbstractBtn) {
+      copyAbstractBtn.addEventListener('click', () => {
+        const text = document.getElementById('abstractContentText').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('Abstract copied to clipboard');
+        });
+      });
+    }
+
+    // Modals (Citation)
+    function openCiteModal() {
+      const modal = document.getElementById('citeModal');
+      if (modal) modal.classList.add('active');
+    }
+    function closeCiteModal() {
+      const modal = document.getElementById('citeModal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function copyBibtex() {
+      const bib = document.getElementById('bibtexText').innerText;
+      navigator.clipboard.writeText(bib).then(() => showToast('BibTeX copied to clipboard'));
+    }
+
+    function copyApa() {
+      const apa = document.getElementById('apaText').innerText;
+      navigator.clipboard.writeText(apa).then(() => showToast('APA citation copied'));
+    }
+
+    // Lightbox
+    function openLightbox(src, title) {
+      const modal = document.getElementById('lightboxModal');
+      const img = document.getElementById('lightboxImg');
+      const titleElem = document.getElementById('lightboxTitle');
+      if (modal && img) {
+        img.src = src;
+        if (titleElem) titleElem.innerText = title;
+        modal.classList.add('active');
+      }
+    }
+    function closeLightbox() {
+      const modal = document.getElementById('lightboxModal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    // Global Overlay & Escape Click Handling
+    window.addEventListener('click', (e) => {
+      const citeModal = document.getElementById('citeModal');
+      const lightboxModal = document.getElementById('lightboxModal');
+      if (e.target === citeModal) closeCiteModal();
+      if (e.target === lightboxModal) closeLightbox();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeCiteModal();
+        closeLightbox();
+        closeMobileMenu();
+      }
+    });
+
+    // Signal Audit Table Filter
+    function filterSignalTable() {
+      const input = document.getElementById('signalFilterInput');
+      const table = document.getElementById('signalTable');
+      const emptyState = document.getElementById('signalEmptyState');
+      if (!input || !table) return;
+      const query = input.value.toLowerCase().trim();
+      const rows = table.querySelectorAll('tbody tr');
+      let visibleCount = 0;
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const match = !query || text.includes(query);
+        row.style.display = match ? '' : 'none';
+        if (match) visibleCount++;
+      });
+      if (emptyState) {
+        emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+    }
+
+    // Interactive Sprint Capacity ROI Estimator
+    function updateEstimator(k) {
+      k = parseInt(k, 10);
+      const sprintCapVal = document.getElementById('sprintCapVal');
+      if (sprintCapVal) sprintCapVal.innerText = k + ' URLs';
+      let prec = 0.88;
+      let model = "Random Forest";
+      let modelDesc = "Micro-Sprint Champion";
+
+      if (k <= 20) {
+        prec = 1.00;
+        model = "Random Forest";
+        modelDesc = "100.00% Precision@20";
+      } else if (k <= 50) {
+        prec = 0.88;
+        model = "Random Forest";
+        modelDesc = "88.00% Precision@50";
+      } else if (k <= 100) {
+        prec = 0.87;
+        model = "Random Forest";
+        modelDesc = "87.00% Precision@100";
+      } else if (k <= 250) {
+        prec = 0.832;
+        model = "Random Forest";
+        modelDesc = "83.20% Precision@250";
+      } else {
+        prec = 0.816;
+        model = "LightGBM";
+        modelDesc = "Deep Queue Champion (ROC-AUC: 0.6872)";
+      }
+
+      const confirmed = Math.round(k * prec);
+      const ruleBaselineConfirmed = Math.round(k * 0.66);
+      const falsePositivesAvoided = Math.max(0, confirmed - ruleBaselineConfirmed);
+      const hoursSaved = (falsePositivesAvoided * 4) + Math.round(k * 0.4);
+
+      const calcPrecision = document.getElementById('calcPrecision');
+      const calcPrecisionSub = document.getElementById('calcPrecisionSub');
+      const calcHoursSaved = document.getElementById('calcHoursSaved');
+      const calcModel = document.getElementById('calcModel');
+      const calcModelSub = document.getElementById('calcModelSub');
+
+      if (calcPrecision) calcPrecision.innerText = (prec * 100).toFixed(1) + '%';
+      if (calcPrecisionSub) calcPrecisionSub.innerText = `${confirmed} of ${k} confirmed decaying`;
+      if (calcHoursSaved) calcHoursSaved.innerText = `~${hoursSaved} hrs`;
+      if (calcModel) calcModel.innerText = model;
+      if (calcModelSub) calcModelSub.innerText = modelDesc;
+    }
+
+    // Interactive Playbook Table Search & Tier Filter
+    function filterPlaybookTable() {
+      const searchInput = document.getElementById('playbookSearchInput');
+      const tierSelect = document.getElementById('playbookTierSelect');
+      const search = (searchInput ? searchInput.value : '').toLowerCase().trim();
+      const tier = tierSelect ? tierSelect.value : 'all';
+      const tableBody = document.getElementById('playbookTableBody');
+      const rows = tableBody ? tableBody.querySelectorAll('tr') : [];
+      let visible = 0;
+
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const rowTier = row.getAttribute('data-tier') || '';
+        const matchesSearch = !search || text.includes(search);
+        const matchesTier = (tier === 'all') || (rowTier.toLowerCase() === tier.toLowerCase());
+
+        if (matchesSearch && matchesTier) {
+          row.style.display = '';
+          visible++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      const emptyState = document.getElementById('playbookEmptyState');
+      const countBadge = document.getElementById('playbookCountBadge');
+      if (emptyState) {
+        emptyState.style.display = visible === 0 ? 'block' : 'none';
+      }
+      if (countBadge) {
+        countBadge.textContent = `Showing ${visible} URL${visible === 1 ? '' : 's'}`;
+      }
+    }
+
+    function resetPlaybookFilters() {
+      const searchInput = document.getElementById('playbookSearchInput');
+      const tierSelect = document.getElementById('playbookTierSelect');
+      if (searchInput) searchInput.value = '';
+      if (tierSelect) tierSelect.value = 'all';
+      filterPlaybookTable();
+    }
+
+    // Export Playbook to CSV
+    function exportPlaybookCSV() {
+      const rows = [
+        ["rank", "content_id", "client_id", "decay_prob", "impressions_90d", "avg_position", "position_tier", "recommended_action"],
+        ["#1", "content_ae56011a24de", "client_624b60c58c", "0.9231", "302", "4.2", "Page 1", "Tier 1B Quick Win"],
+        ["#2", "content_9d35d489e74d", "client_624b60c58c", "0.9230", "169", "6.7", "Page 1", "Tier 1B Quick Win"],
+        ["#3", "content_20c5d6a1c7b1", "client_624b60c58c", "0.9199", "201", "6.2", "Page 1", "Tier 1B Quick Win"],
+        ["#4", "content_70b10b7227ac", "client_624b60c58c", "0.9140", "356", "7.5", "Page 1", "Tier 1B Quick Win"],
+        ["#5", "content_1023abe9e4dd", "client_624b60c58c", "0.9132", "137", "4.6", "Page 1", "Tier 1B Quick Win"],
+        ["#6", "content_d8020ed269ef", "client_6208ef0f77", "0.9123", "1216", "1.2", "Top 3", "Tier 1A Deep Refresh"],
+        ["#7", "content_6e1add102562", "client_624b60c58c", "0.9105", "133", "6.1", "Page 1", "Tier 1B Quick Win"],
+        ["#8", "content_4bb993e9270e", "client_6208ef0f77", "0.9089", "1986", "1.3", "Top 3", "Tier 1A Deep Refresh"],
+        ["#9", "content_d0fd2e1ec8f6", "client_6208ef0f77", "0.9068", "519", "2.5", "Top 3", "Tier 1A Deep Refresh"],
+        ["#10", "content_de147de3f5fe", "client_624b60c58c", "0.9044", "1747", "11.5", "Striking", "Tier 1A Deep Refresh"],
+        ["#11", "content_a27eb2ede5e6", "client_6208ef0f77", "0.9042", "2482", "2.0", "Top 3", "Tier 1A Deep Refresh"],
+        ["#12", "content_186489efe6f4", "client_6208ef0f77", "0.9019", "4792", "2.3", "Top 3", "Tier 1A Deep Refresh"],
+        ["#13", "content_6752b50ee577", "client_bbb965ab0c", "0.8990", "2142", "2.9", "Top 3", "Tier 1A Deep Refresh"],
+        ["#14", "content_9d0300db3dbb", "client_624b60c58c", "0.8982", "361", "7.1", "Page 1", "Tier 1B Quick Win"],
+        ["#15", "content_ba8edc136162", "client_4e07408562", "0.8950", "13082", "16.2", "Striking", "Tier 1A Deep Refresh"]
+      ];
+
+      let csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "flyrank_prioritized_editorial_queue_sample.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("Playbook CSV exported");
+    }
+  </script>
 </body>
+
 </html>

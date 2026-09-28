@@ -1,6 +1,5 @@
 """
 02_train_models.py - Execute 5-fold client-grouped CV and export scorecard, queues, and publication charts.
-Strict out-of-domain validation with fold-isolated scaling (zero leakage).
 """
 
 import os
@@ -114,7 +113,7 @@ def main():
     df_scorecard = pd.DataFrame(scorecard)
     scorecard_path = os.path.join(out_dir, "model_comparison_scorecard.csv")
     df_scorecard.to_csv(scorecard_path, index=False)
-    print(f"\n[SUCCESS] Exported model comparison scorecard to {scorecard_path}")
+    print(f"\nExported model comparison scorecard to {scorecard_path}")
     print(df_scorecard.to_string(index=False))
 
     # 4. Measure The Memorization Gap (Naive Random K-Fold vs. Honest Client-Grouped CV)
@@ -153,7 +152,7 @@ def main():
     df_gap = pd.DataFrame(gap_data)
     gap_path = os.path.join(out_dir, "validation_memorization_gap.csv")
     df_gap.to_csv(gap_path, index=False)
-    print(f"[SUCCESS] Exported validation memorization gap to {gap_path}")
+    print(f"Exported validation memorization gap to {gap_path}")
 
     # 5. Export Baseline Top 20 Queue
     def generate_reason_codes(row):
@@ -177,7 +176,7 @@ def main():
                  'impressions_90d', 'position_tier', 'age_tier', 'days_since_last_update']
     base_queue_path = os.path.join(out_dir, "baseline_top20_queue.csv")
     df_base_queue[base_cols].head(20).to_csv(base_queue_path, index=False)
-    print(f"[SUCCESS] Exported baseline top-20 queue to {base_queue_path}")
+    print(f"Exported baseline top-20 queue to {base_queue_path}")
 
     # 6. Export Model Prioritized Queues (RF & LGB)
     df['oof_rf_prob'] = oof_rf
@@ -188,14 +187,14 @@ def main():
     rf_cols = ['content_id', 'client_id', 'oof_rf_prob', 'is_declining_label', 'impressions_90d', 'avg_position', 'position_tier', 'content_age_days']
     rf_queue_path = os.path.join(out_dir, "rf_prioritized_queue_top100.csv")
     df_rf_queue[rf_cols].head(100).to_csv(rf_queue_path, index=False)
-    print(f"[SUCCESS] Exported Random Forest top-100 queue to {rf_queue_path}")
+    print(f"Exported Random Forest top-100 queue to {rf_queue_path}")
 
     # LGB Top-100 (Deep Queue Champion)
     df_lgb_queue = df.sort_values(by='oof_lgb_prob', ascending=False)
     lgb_cols = ['content_id', 'client_id', 'oof_lgb_prob', 'is_declining_label', 'impressions_90d', 'avg_position', 'position_tier', 'content_age_days']
     lgb_queue_path = os.path.join(out_dir, "lgb_prioritized_queue_top100.csv")
     df_lgb_queue[lgb_cols].head(100).to_csv(lgb_queue_path, index=False)
-    print(f"[SUCCESS] Exported LightGBM top-100 queue to {lgb_queue_path}")
+    print(f"Exported LightGBM top-100 queue to {lgb_queue_path}")
 
     # 7. Action Playbook with Client Diversification
     def assign_tier(row):
@@ -212,7 +211,7 @@ def main():
     df_playbook['recommended_action'] = df_playbook.apply(assign_tier, axis=1)
     playbook_path = os.path.join(out_dir, "editorial_action_playbook_top100.csv")
     df_playbook.head(100).to_csv(playbook_path, index=False)
-    print(f"[SUCCESS] Exported editorial action playbook top-100 to {playbook_path}")
+    print(f"Exported editorial action playbook top-100 to {playbook_path}")
 
     # 8. Export Validation Attack Checklist
     checklist_data = [
@@ -227,7 +226,7 @@ def main():
     df_check = pd.DataFrame(checklist_data)
     check_path = os.path.join(out_dir, "validation_attack_checklist.csv")
     df_check.to_csv(check_path, index=False)
-    print(f"[SUCCESS] Exported validation attack checklist to {check_path}")
+    print(f"Exported validation attack checklist to {check_path}")
 
     # 9. Generate and Save Publication Figures
     print("\nGenerating publication figures...")
@@ -316,7 +315,7 @@ def main():
     plt.savefig(fig3_path, dpi=300)
     plt.savefig(os.path.join(docs_img_dir, 'memorization_gap.png'), dpi=300)
     plt.close()
-    print("[SUCCESS] All 3 publication figures regenerated dynamically in outputs/charts/ and docs/img/")
+    print("All 3 publication figures regenerated dynamically in outputs/charts/ and docs/img/")
 
 
 if __name__ == "__main__":

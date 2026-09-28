@@ -2,4 +2,4 @@
 file:///c:/Users/1iCE/Desktop/internship%20project/docs/index.html
 
 # Production GitHub Pages URL Deployment Target:
-https://applied-search-intelligence.github.io/content-decay-ml/
+https://nashidulsarker.github.io/flyrank-internship-capstone/

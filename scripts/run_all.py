@@ -1,6 +1,5 @@
 """
 run_all.py - Master execution script for FlyRank content decay research pipeline.
-Automatically detects project virtual environment if not already activated.
 """
 
 import os
@@ -37,7 +36,7 @@ def main():
     # Step 2: Model Training, Validation, and Artifact Exports
     run_cmd(f'"{py_bin}" "{os.path.join(script_dir, "02_train_models.py")}"', "5-Fold Client-Grouped CV, Scorecard, Queues & Charts")
 
-    print("\n[COMPLETE] All production pipeline stages finished successfully.")
+    print("\nAll production pipeline stages finished successfully.")
 
 
 if __name__ == "__main__":

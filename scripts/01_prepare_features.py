@@ -28,7 +28,7 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     out_file = os.path.abspath(os.path.join(out_dir, "refresh_feature_vector.csv"))
     df_prepared.to_csv(out_file, index=False)
-    print(f"[SUCCESS] Saved prepared feature vector ({df_prepared.shape[0]:,} rows x {df_prepared.shape[1]} cols) to {out_file}")
+    print(f"Saved prepared feature vector ({df_prepared.shape[0]:,} rows x {df_prepared.shape[1]} cols) to {out_file}")
 
 
 if __name__ == "__main__":
